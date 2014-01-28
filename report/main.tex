@@ -25,7 +25,7 @@
 %	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
 %----------------------------------------------------------------------------------------
 
-\documentclass[11pt, a4paper, oneside]{Thesis} % Paper size, default font size and one-sided paper
+\documentclass[11pt, a4paper, twoside]{Thesis} % Paper size, default font size and one-sided paper
 
 \graphicspath{{Pictures/}} % Specifies the directory where pictures are stored
 
@@ -77,7 +77,7 @@
 \begin{minipage}{0.4\textwidth}
 \begin{flushright} \large
 \emph{Supervisor:} \\
-\href{http://www.jamessmith.com}{\supname} % Supervisor name - remove the \href bracket to remove the link  
+\href{http://www.doc.ic.ac.uk/~pjm/}{\supname} % Supervisor name - remove the \href bracket to remove the link  
 \end{flushright}
 \end{minipage}\\[3cm]
  
@@ -123,27 +123,9 @@ Date:\\
 \clearpage % Start a new page
 
 %----------------------------------------------------------------------------------------
-%	QUOTATION PAGE
-%----------------------------------------------------------------------------------------
-
-\pagestyle{empty} % No headers or footers for the following pages
-
-\null\vfill % Add some space to move the quote down the page a bit
-
-\textit{``Thanks to my solid academic training, today I can write hundreds of words on virtually any topic without possessing a shred of information, which is how I got a good job in journalism."}
-
-\begin{flushright}
-Dave Barry
-\end{flushright}
-
-\vfill\vfill\vfill\vfill\vfill\vfill\null % Add some space at the bottom to position the quote just right
-
-\clearpage % Start a new page
-
-%----------------------------------------------------------------------------------------
 %	ABSTRACT PAGE
 %----------------------------------------------------------------------------------------
-
+\iffalse
 \addtotoc{Abstract} % Add the "Abstract" page entry to the Contents
 
 \abstract{\addtocontents{toc}{\vspace{1em}} % Add a gap in the Contents, for aesthetics
@@ -168,12 +150,12 @@ The acknowledgements and the people to thank go here, don't forget to include yo
 %----------------------------------------------------------------------------------------
 %	LIST OF CONTENTS/FIGURES/TABLES PAGES
 %----------------------------------------------------------------------------------------
-
+\fi
 \pagestyle{fancy} % The page style headers have been "empty" all this time, now use the "fancy" headers as defined before to bring them back
 
 \lhead{\emph{Contents}} % Set the left side page header to "Contents"
 \tableofcontents % Write out the Table of Contents
-
+\iffalse
 \lhead{\emph{List of Figures}} % Set the left side page header to "List of Figures"
 \listoffigures % Write out the List of Figures
 
@@ -240,7 +222,7 @@ $\omega$ & angular frequency & rads$^{-1}$ \\
 \dedicatory{For/Dedicated to/To my\ldots} % Dedication text
 
 \addtocontents{toc}{\vspace{2em}} % Add a gap in the Contents, for aesthetics
-
+\fi
 %----------------------------------------------------------------------------------------
 %	THESIS CONTENT - CHAPTERS
 %----------------------------------------------------------------------------------------
@@ -253,7 +235,7 @@ $\omega$ & angular frequency & rads$^{-1}$ \\
 % Uncomment the lines as you write the chapters
 
 \input{Chapters/Chapter1}
-%\input{Chapters/Chapter2} 
+\input{Chapters/Chapter2} 
 %\input{Chapters/Chapter3}
 %\input{Chapters/Chapter4} 
 %\input{Chapters/Chapter5} 
