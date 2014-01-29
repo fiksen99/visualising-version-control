@@ -1,10 +1,8 @@
-% Chapter Template
+\chapter{Background}
 
-\chapter{Background} % Main chapter title
+\label{Chapter2}
 
-\label{Chapter2} % Change X to a consecutive number; for referencing this chapter elsewhere, use \ref{ChapterX}
-
-\lhead{Chapter 2. \emph{Background}} % Change X to a consecutive number; this is for the header on each page - perhaps a shortened title
+\lhead{Chapter 2. \emph{Background}}
 
 %----------------------------------------------------------------------------------------
 %	Initial Approach
@@ -12,8 +10,32 @@
 
 \section{Initial Approach}
 
+The first problem encountered immediately in my project was in specifying
+specifically what problem I wanted to solve, and which direction I should take
+my project in. The initial proposition by my supervisor was very broad, 
+enabling me to look into a wide variety of goals. In particular, I saw two separate areas
+of focus -- there was a clear divide between looking \emph{within} individual git 
+projects and comparing statistics \emph{between} multiple projects, with both 
+enabling interesting data to be gathered. 
 
+The possibilities of looking within projects is quite exciting, as it could enable a solution
+to a problem that appears fairly regularly in industry -- the handover problem \cite{handover}.
+For example, if we were to provide information about certain files and even lines which are 
+often modified in commits, it could highlight an area with a high potential for error.
+Further to this, we could integrate the git commit analyses with a testing
+framework, creating a tool to indicate good and bad coders -- those who add
+tests, those who frequently break them etc.
 
+There is also interesting potential in examining the data given between different
+git projects. When we consider undergraduate work in earlier years, there are a
+large number of courseworks which have the same specification, completed by 
+individuals. This will allow us to directly compare statistics on these pieces
+of work and gain some insight into the students' workflow, and even how this
+compares to their grade received. Some areas of note in this area include comparing
+areas of code modified, their start and end times, and the methodologies used
+by undergraduates vs. postgraduates working on the same projects. The results
+could easily be cross referenced against their grades to indicate successful
+or poor approaches.
 %-----------------------------------
 %	SUBSECTION 1
 %-----------------------------------
