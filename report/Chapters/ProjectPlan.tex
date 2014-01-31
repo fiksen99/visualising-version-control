@@ -4,3 +4,50 @@
 \label{ProjectPlan} % Change X to a consecutive number; for referencing this chapter elsewhere, use \ref{ChapterX}
 
 \lhead{Chapter 3. \emph{Project Plan}} % Change X to a consecutive number; this is for the header on each page - perhaps a shortened title
+
+\section{Accomplished}
+
+Much research has gone into the techniques used throughout academia to detect 
+code similarity (see \ref{Background}). A number of approaches have been considered
+and a particularly interesting approach has been chosen to focus on for the 
+implementation of this project. To apply the given algorithms, I need access to
+a set of code bases to compare, which has been provided by Mark Wheelhouse, along
+with the grades assigned to the code.
+
+\section{Immediate Priorities}
+
+Having studied a number of research articles in the area of plagiarism detection,
+the next step is to begin working on a prototype implementation of my chosen
+method (semantic/structural analysis). With access to the second year pintos labs,
+written in C, and the grades assigned to the students, I can begin testing various
+approaches and modifications to algorithms. The outcome of these experiments will
+determine the next area to work on -- a decent enough result will allow me to
+begin working on a user interface/graphical representation for the data, which
+can be distributed to a number of students to test. Alternatively, it is probable
+that more research will be needed, so delving further into more recent plagiarism
+detection papers may be necessary.
+
+This step is a lot more in depth than it seems. As discussed in the literature,
+we need to build a lexer/parser for our language of choice to construct our
+internal tree represenation. Tools to use here include flex~\cite{flex} and bison
+\cite{bison} to build the tree, and then application of our chosen algorithm
+to generate the results.
+
+\section{Building the Interface}
+
+Once a suitable algorithm has been designed, the next step is to design and 
+implement the user interface of the application. At present, a gitlab plugin
+seems the most appropriate method of achieving this, and, as stated, the
+form in which the data is displayed will be investigated with feedback given by
+potential users of the system.
+
+\section{Additions to the System}
+
+Depending on the progress of the project, it could be possible to add extra
+features to the plugin. Previously touched upon ideas include integration with
+testing systems and other comparisons between code bases. These ideas could also
+be included in a contingency plan -- as the complexity of these features is much
+smaller, if the similarity comparison were to fall through, a final product could
+still be achieved with useful results. This will give an actual application to
+present in the final stages alongside the analysis of problems with similarity
+comparison.
