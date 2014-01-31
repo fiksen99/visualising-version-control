@@ -90,7 +90,7 @@ I
 
 \section{Areas of Research}
 
-Having discussed ideas with my proejct supervisor, and feeling happy with the
+Having discussed ideas with my project supervisor, and feeling happy with the
 focus on code similarity, I proceeded to research academic articles which could
 provide me with ideas and techniques to use in my project. We agreed that the
 techniques used in plagiarism detection would be beneficial here, as what I aim
@@ -120,7 +120,7 @@ code duplication. The winnowing algorithm works by hashing substrings of length
 The winnowing step is the defined as: 
 \begin{quote}In each window select the minimum hash value.
 If there is more than one hash with the minimum value, select the rightmost
-occurence. Now save all selected hashes as the fingerprints of the document.
+occurance. Now save all selected hashes as the fingerprints of the document.
 \cite{winnowing}
 \end{quote}
 
@@ -146,18 +146,18 @@ similarity, as is discussed later in this chapter (section~\ref{subsec:SimGranul
 
 At the other end of the code comparison spectrum appears a detection framework
 which examines the structure and semantics of code~\cite{Belkhouche}. This system
-involves parsing the code and building an abstract syntax tree represenation.
+involves parsing the code and building an abstract syntax tree representation.
 From here, the tree is recursively divided into regions based on the control
 flow of the program -- assignments are seen as leaf nodes, with comparisons being
 subdivided further. See Figure~\ref{fig:BelkhoucheComparison} for an example of
 the division into regions.
 
 Once regions have been specified, we can now move on to the comparison steps,
-which involve comparison of the \emph{syntactic catgeory} of the region, to 
+which involve comparison of the \emph{syntactic category} of the region, to 
 remove unlikely matches in the code. For the remaining regions, the code
 is then scrutinised more closely with a novel \emph{micro comparison} step -- 
 looking at the shape and tokens of subtrees to look at similarity. The final step
-compares the individual indentifiers in the subtree for similarity.
+compares the individual identifiers in the subtree for similarity.
 
 \begin{figure}[h]
 	\centering
@@ -177,8 +177,6 @@ must be developed from scratch.
 Further research into the semantic analysis to detect code similarities has yielded
 a number of recent potential projects.
 
-
-
 \section{Further Considerations}
 
 There are some background tasks that also need to be researched further before a
@@ -191,7 +189,7 @@ Early ideas raised, before the projects direction was more firmly in place,
 included Eclipse/IDE plugins or even an individual application. These are not a
 viable approach to the problem as it is now described. Much more relevant formats
 include building a web service which users could log in to, or even building a
-gilab plugin. Currently, building a plugin for gitlab seems the most appropriate
+gitlab plugin. Currently, building a plugin for gitlab seems the most appropriate
 solution to this issue. Students already have access to the gitlab internal website
 and if there was an option to integrate these features with gitlab natively, it
 seems the tool would be more straightforward, and therefore more useful, to use.
@@ -232,7 +230,7 @@ as possible. This is an area that would be best explored once a working prototyp
 is in place, and different formats could be presented to testers allowing them
 to provide vital UI feedback.
 
-\subsection{Granularity of Simularity Comparison}
+\subsection{Granularity of Similarity Comparison}
 \label{subsec:SimGranularity}
 
 Given that the outcomes of this tool is to provide information on/for undergraduate
