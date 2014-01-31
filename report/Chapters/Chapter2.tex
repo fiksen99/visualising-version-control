@@ -82,11 +82,6 @@ I
 
 
 
-%-----------------------------------
-%	SUBSECTION 1
-%-----------------------------------
-\subsection{Subsection 1}
-
 
 %----------------------------------------------------------------------------------------
 %	SECTION 2
@@ -117,7 +112,7 @@ My initial searches pointed me in the direction of the MOSS plagiarism detection
 system. MOSS is a popular tool used throughout academia for detecting plagiarism
 in code, which accepts a large number of input source code files and uses certain
 techniques to check for plagiarism. The technique used is known as 
-``winnowing''\cite{winnowing}. This process takes ideas from earlier detection
+``winnowing''~\cite{winnowing}. This process takes ideas from earlier detection
 techniques, such as \emph{k-grams}, and applies their own algorithms to indicate
 code duplication. The winnowing algorithm works by hashing substrings of length
 \emph{k} (the \emph{k-grams}) and moving through \emph{windows} of these hashes.
@@ -134,8 +129,45 @@ The resulting fingerprints are then compared with the fingerprints of another
 code base, with more hits indicating a larger likelihood of plagiarism.
 
 We can see how this could be applicable for the uses of code similarity -- 
+where code is written in a similar manner, more fingerprints would match,
+giving us a clear similarity. Though this process works for plagiarism detection
+where it is expected that code is simply lifted from one student's work to
+another's, concerns can be raised as to how applicable this technique will work
+when the code is similarly written, but not a direct copy. For example, when 
+students are applying the same ideas to write their code, but not actually
+copying each other, we would want to see a high similarity score. It is likely
+that this may not result in a high score through winnowing due to constraints
+with the algorithm. If the differences in layout happen to fall in an unfortunate
+pattern, it's possible that the similarities are missed.
 
+This technique does provide a possible solution to the issue of granularity of
+similarity, as is discussed later in this chapter (section~\ref{subsec:SimGranularity}).
+
+At the other end of the code comparison spectrum appears a detection framework
+which examines the structure and semantics of code~\cite{Belkhouche}. This system
+involves parsing the code and building an abstract syntax tree represenation.
+From here, the tree is recursively divided into regions based on the control
+flow of the program -- assignments are seen as leaf nodes, with comparisons being
+subdivided further. See Figure~\ref{fig:BelkhoucheComparison} for an example of
+the division into regions.
+
+\begin{figure}[h!]
+	\centering
+		\includegraphics[width=\textwidth]{Figures/Belkhouche}
+	\caption{Regions specified with Belkhouche et. al's method~\cite{Belkhouche}}
+	\label{fig:BelkhoucheComparison}
+\end{figure}
 
 
 
 \section{Further Considerations}
+
+gitlab plugin, separate webapp?
+
+anonymise for students to look at code
+
+best format to display output
+
+\subsection{Granularity of Simularity Comparison}
+\label{subsec:SimGranularity}
+difference in code similarity, figure how to set granularity threshold
