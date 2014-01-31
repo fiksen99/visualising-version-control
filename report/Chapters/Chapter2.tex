@@ -10,6 +10,7 @@
 
 \section{Initial Approach}
 
+\subsection{Assessing Project Scope}
 The first problem encountered immediately in my project was in specifying
 specifically what problem I wanted to solve, and which direction I should take
 my project in. The initial proposition by my supervisor was very broad, 
@@ -36,6 +37,51 @@ areas of code modified, their start and end times, and the methodologies used
 by undergraduates vs. postgraduates working on the same projects. The results
 could easily be cross referenced against their grades to indicate successful
 or poor approaches.
+
+\subsection{Code Similarity}
+
+I chose to look more closely at the problems surrounding the comparison of
+multiple code repositories as this would open the door to building a tool which
+could be of use to fellow students as they undertake programming exercises for
+their studies. It's possible that a project in this area could also benefit lab
+coordinators, aiding in marking and feedback. For example, following some of the
+techniques mentioned above, an analysis of git habits could reveal important
+correlations between grades and certain workflows which could aid feedback and teaching.
+
+Taking the analysis further, I considered what other information we could gather
+from multiple code bases. Given the students all work toward the same coursework
+specification, and in many cases, even from the same skeleton files, it would be
+interesting to see how their code itself is similar or different. In parsing
+the students code and using a certain means to analyse it, there is a huge 
+amount of analysis we could perform on the results. This would
+deviate from the focus of version control, but could provide a wealth of 
+information on the students' approach to exercises.
+
+It is down this avenue that I felt investing my time would be most fruitful --
+it would be very interesting to look into the similarities of student code,
+possibly comparing the approach to the marks received. Students would be
+able to look at this and see where they're particular approach differed
+significantly from the top of the class' work (for example). We could also
+highlight where a student came up with a particularly novel solution, if they
+receive a high mark but with a low similarity to other pieces of work. This
+would work well with a graphical representation of the code, as mocked up in
+Figure \ref{fig:SimilarityVsGradeGraph}. Note the outlier, with a high grade but
+low similarity, indicating a unique but good approach. It is also obvious how
+this could be used to provide genericised feedback, for example ``everyone in
+this cluster failed to spot the trick of calling function foo recursively''.
+
+\begin{figure}[h!]
+	\centering
+		\includegraphics[width=\textwidth]{Figures/similarityVsGradeGraph}
+	\caption{How a potential similarity graph may look, comparing each piece of
+	code against the top graded work}
+	\label{fig:SimilarityVsGradeGraph}
+\end{figure}
+
+I
+
+
+
 %-----------------------------------
 %	SUBSECTION 1
 %-----------------------------------
@@ -47,3 +93,31 @@ or poor approaches.
 %----------------------------------------------------------------------------------------
 
 \section{Areas of Research}
+
+Having discussed ideas with my proejct supervisor, and feeling happy with the
+focus on code similarity, I proceeded to research academic articles which could
+provide me with ideas and techniques to use in my project. We agreed that the
+techniques used in plagiarism detection would be beneficial here, as what I aim
+to achieve is essentially a less strict plagiarism detector. i.e. rather than
+looking for a binary answer, ``yes'' vs. ``no'', to the similarity of code, I'd
+want to find how similar the code is.
+
+The issue of code similarity is a complex one, and solutions to the problem
+vary wildly in terms of technique, complexity and accuracy. Although plagiarism
+detection in essays and other extended writing tasks has been 
+researched by many and a large number of working products exist, the research
+into plagiarism detection within code is still a largely changing area. There
+is currently no established norm to follow in building our solution. Our problem
+is exacerbated by the fact that, as previously touched upon,
+any research into plagiarism detection is
+generally looking for a solution which can output a binary result, whereas the
+aim of this project is to produce an output which gives a sliding scale.
+
+My initial searches pointed me in the direction of the MOSS plagiarism detection
+system. This is a popular tool used throughout academia for detecting plagiarism
+in code, which accepts a large number of input source code files and uses certain
+techniques to check for plagiurism. The technique used by MOSS is known as 
+``winnowing''\cite{winnowing}.
+
+
+\section{Further Considerations}
