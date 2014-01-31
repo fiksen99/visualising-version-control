@@ -39,6 +39,7 @@ could easily be cross referenced against their grades to indicate successful
 or poor approaches.
 
 \subsection{Code Similarity}
+\label{CodeSimBegin}
 
 I chose to look more closely at the problems surrounding the comparison of
 multiple code repositories as this would open the door to building a tool which
@@ -151,23 +152,105 @@ flow of the program -- assignments are seen as leaf nodes, with comparisons bein
 subdivided further. See Figure~\ref{fig:BelkhoucheComparison} for an example of
 the division into regions.
 
-\begin{figure}[h!]
+Once regions have been specified, we can now move on to the comparison steps,
+which involve comparison of the \emph{syntactic catgeory} of the region, to 
+remove unlikely matches in the code. For the remaining regions, the code
+is then scrutinised more closely with a novel \emph{micro comparison} step -- 
+looking at the shape and tokens of subtrees to look at similarity. The final step
+compares the individual indentifiers in the subtree for similarity.
+
+\begin{figure}[h]
 	\centering
 		\includegraphics[width=\textwidth]{Figures/Belkhouche}
 	\caption{Regions specified with Belkhouche et. al's method~\cite{Belkhouche}}
 	\label{fig:BelkhoucheComparison}
 \end{figure}
 
+This technique has been proven to perform better than the previously discussed
+winnowing algorithm for plagiarism detection. In this context, it is beneficial
+as it is able to spot similarities that would otherwise go missed by winnowing.
+This looks to be a good springboard for developing an algorithm to deal with
+the issue of code similarity. Unfortunately,
+the original research has since been destroyed, so a tool built upon this algorithm 
+must be developed from scratch.
+
+Further research into the semantic analysis to detect code similarities has yielded
+a number of recent potential projects.
+
 
 
 \section{Further Considerations}
 
-gitlab plugin, separate webapp?
+There are some background tasks that also need to be researched further before a
+well thought out plan can be finalised.
 
-anonymise for students to look at code
+\subsection{Final Product Format}
 
-best format to display output
+A few options remain as to how the finished project should be presented to users.
+Early ideas raised, before the projects direction was more firmly in place,
+included Eclipse/IDE plugins or even an individual application. These are not a
+viable approach to the problem as it is now described. Much more relevant formats
+include building a web service which users could log in to, or even building a
+gilab plugin. Currently, building a plugin for gitlab seems the most appropriate
+solution to this issue. Students already have access to the gitlab internal website
+and if there was an option to integrate these features with gitlab natively, it
+seems the tool would be more straightforward, and therefore more useful, to use.
+
+Having had minimal interaction with gitlab and it's source code in the past, this
+approach, though very attractive currently, could be more problematic than 
+initially thought. However, the software is open source, so it would be expected
+that features such as this can be integrated with the local implementation
+straightforwardly.
+
+\subsection{Anonymising Code}
+
+One of the key takeaways from this project is to give the students a tool
+they can use to compare their code with their colleagues' code, in particular
+looking at the grades received and thus what they can do to improve themselves.
+However, this has implications on the privacy of their work -- it is simple to
+anonymise the grades associated with the code by not including any names in
+the comparisons. However, what is more difficult to hide is the circumstance where
+students leave identifying information in their commit messages or code comments.
+
+Depending on user feedback, different approaches can be implemented. The simplest
+solution is to warn students that their code and commits will be viewable, so
+they have the opportunity to remove any identifying information as they wish. It
+could even be possible to allow students to opt-out of the system, removing them
+from any data collected, but also forbidding them access to the system. A more
+complex approach involves using already established algorithms to censor certain
+information such as names and logins, though this may not be foolproof, and so
+leaves the door open for unhappy students being identified.
+
+\subsection{Data Representation}
+
+Section~\ref{CodeSimBegin} presented a mockup of how the similarity scores could
+be displayed in a graphical manner, however there are a multitude of ways that
+this data could be presented. A main area of focus second to the algorithm should
+be exactly how this information can be displayed -- the format should provide
+clarity and ease of understanding, whilst also retaining as much of the information
+as possible. This is an area that would be best explored once a working prototype
+is in place, and different formats could be presented to testers allowing them
+to provide vital UI feedback.
 
 \subsection{Granularity of Simularity Comparison}
 \label{subsec:SimGranularity}
-difference in code similarity, figure how to set granularity threshold
+
+Given that the outcomes of this tool is to provide information on/for undergraduate
+computing students, we need to look at how our definition of similar code might
+change depending on a few factors. If the students are working on their very first
+Haskell exercise, we may find that the only way to get useful information out
+of the comparison is if the code is examined in a very fine grained manner. When
+the code is only four or five lines long, there is a much greater weight placed
+on changing half a line of code than in a second year Operating Systems course.
+The language used also needs to be taken into consideration for the same reason.
+As such, a possible area of study is looking how to modify parameters supplied
+to, and maybe developing heuristics for, the algorithm to specify how we want
+to examine the code.
+
+\subsection{Other Useful Comparisons}
+
+There are also areas of note previously touched upon but not focussed to much on.
+It would be nice to finish the project with a suite of tools to be used by either
+the lab coordinators or the students themselves. This could involve information
+on their commits, or perhaps integrating with testing environments to indicate
+exactly how well the student is performing at a certain time/how they improved.
