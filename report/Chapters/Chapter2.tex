@@ -114,10 +114,28 @@ generally looking for a solution which can output a binary result, whereas the
 aim of this project is to produce an output which gives a sliding scale.
 
 My initial searches pointed me in the direction of the MOSS plagiarism detection
-system. This is a popular tool used throughout academia for detecting plagiarism
+system. MOSS is a popular tool used throughout academia for detecting plagiarism
 in code, which accepts a large number of input source code files and uses certain
-techniques to check for plagiurism. The technique used by MOSS is known as 
-``winnowing''\cite{winnowing}.
+techniques to check for plagiarism. The technique used is known as 
+``winnowing''\cite{winnowing}. This process takes ideas from earlier detection
+techniques, such as \emph{k-grams}, and applies their own algorithms to indicate
+code duplication. The winnowing algorithm works by hashing substrings of length
+\emph{k} (the \emph{k-grams}) and moving through \emph{windows} of these hashes.
+The winnowing step is the defined as: 
+\begin{quote}In each window select the minimum hash value.
+If there is more than one hash with the minimum value, select the rightmost
+occurence. Now save all selected hashes as the fingerprints of the document.
+\cite{winnowing}
+\end{quote}
+
+This process is undertaken after refactoring the code so that whitespace
+has minimal effect and, if possible, variable renaming to normalised names.
+The resulting fingerprints are then compared with the fingerprints of another
+code base, with more hits indicating a larger likelihood of plagiarism.
+
+We can see how this could be applicable for the uses of code similarity -- 
+
+
 
 
 \section{Further Considerations}
