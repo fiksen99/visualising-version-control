@@ -71,18 +71,13 @@ low similarity, indicating a unique but good approach. It is also obvious how
 this could be used to provide genericised feedback, for example ``everyone in
 this cluster failed to spot the trick of calling function foo recursively''.
 
-\begin{figure}[h!]
+\begin{figure}[ht!]
 	\centering
 		\includegraphics[width=\textwidth]{Figures/similarityVsGradeGraph}
 	\caption{How a potential similarity graph may look, comparing each piece of
 	code against the top graded work}
 	\label{fig:SimilarityVsGradeGraph}
 \end{figure}
-
-I
-
-
-
 
 %----------------------------------------------------------------------------------------
 %	SECTION 2
@@ -175,12 +170,54 @@ the original research has since been destroyed, so a tool built upon this algori
 must be developed from scratch.
 
 Further research into the semantic analysis to detect code similarities has yielded
-a number of recent potential projects.
+a number of recent potential projects. Latent Semantic Analysis~\cite{LatentSemanticAnalysis}
+is a technique developed whose primary aims include ``[providing] visualization of
+the relative similarity between files'' which is specifically what we are aiming
+for. It works by counting variable frequency and performing ``Singular Value 
+Decomposition'' to aid in getting the similarities of variables across files. To
+simplify how this algorithm works, if we consider the code flow in Figure
+\ref{fig:simpleLSACode}, other techniques may struggle to recognise that variables
+\emph{a} and \emph{b} are essentially the same. If there was another piece of code
+which called similar complex calculations, but only on \emph{a}, other systems 
+would not spot the similarity here. This results in LSA providing additional insight
+which can accompany our other methods of similarity detection. 
+
+\begin{figure}[ht!]
+\centering
+\begin{verbatim}int a = 1;
+//...complex calculations which modify a
+int b = a;
+//...more complex calculations modifying b
+\end{verbatim}
+\caption{LSA would keep track of the equivalency of a and b}
+\label{fig:simpleLSACode}
+\end{figure}
 
 \section{Further Considerations}
 
 There are some background tasks that also need to be researched further before a
 well thought out plan can be finalised.
+
+\subsection{Ignore Skeleton Code}
+
+The context of this project is to provide similarity detection between student
+submitted work. As such, it frequently occurs that the students are given an
+initial skeleton code base to start from. In the case of pintos, this skeleton code
+is thousands of lines long, and so, it is likely that any na\"{\i}ve implementation
+of a similarity algorithm will return a very high similarity for \emph{all}
+students. This is not ideal, as we know the skeleton code will be identical to
+each other, and only want to take into account code submitted by the student.
+
+A possible solution to this would be to diff the initial and final commit and
+apply the similarity algorithm to the result. This will certainly remove any 
+duplicate code from comparison, however we run into issues where splitting
+the code up is likely to return uncompilable code -- no problem for a lexical
+analysis, however our in depth semantic analysis methods are likely to become
+confused by this. Other approaches could involve passing the original skeleton 
+code, and within the algorithm, devise some method to ignore this section of
+similarity whilst still relying on the code to make a parsable system. This
+approach would be more complex, however may be necessary in the case of semantic
+analysis.
 
 \subsection{Final Product Format}
 
