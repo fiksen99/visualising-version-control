@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Code-similarity
+Bundle-SymbolicName: com.imperial.fiksen.code-similarity;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: FIKSEN
+Require-Bundle: org.eclipse.ui
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
