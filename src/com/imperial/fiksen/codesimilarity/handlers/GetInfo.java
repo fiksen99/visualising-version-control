@@ -19,6 +19,10 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jface.text.Document;
 
+import comparison.TreeBuilder;
+
+import belkhoucheComparison.SyntacticTreeBuilder;
+
 public class GetInfo extends AbstractHandler {
 
 	private static final String JDT_NATURE = "org.eclipse.jdt.core.javanature";
@@ -50,13 +54,19 @@ public class GetInfo extends AbstractHandler {
 	}
 
 	private void createAST(IPackageFragment mypackage) throws JavaModelException {
+		TreeBuilder builder = new SyntacticTreeBuilder();
 		for (ICompilationUnit unit : mypackage.getCompilationUnits()) {
 			printCompilationUnitDetails(unit);
 			CompilationUnit parse = parse(unit);
 			MethodVisitor visitor = new MethodVisitor();
 			parse.accept(visitor);
-			for( MethodDeclaration method : visitor.getMethods()) {
-				System.out.println(method.toString());
+			for (MethodDeclaration method : visitor.getMethods()) {
+				if(method.getName().toString().equals("testMethodBool")) {
+					System.out.println("HERE!");
+					builder.createTreeFromMethods(method);
+				}
+				//System.out.println(method.toString());
+				System.out.println(method.getBody().toString());
 			}
 		}
 	}
