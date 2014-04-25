@@ -23,6 +23,9 @@ import comparison.SimilarityAnalyser;
 
 public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 	
+	private static final double DECAY_FACTOR = 0.9;
+	private static final int THRESHOLD_DEPTH = 10;
+	
 	Map<IProject, Map<IProject, Map<CompilationUnit, Double>>> scores; 
 	
 	public ParseTreeKernelSimilarityAnalyser() {
@@ -37,7 +40,7 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 					try {
 						if (project1.isNatureEnabled(JDT_NATURE)
 								&& project2.isNatureEnabled(JDT_NATURE)) {
-							long kVal = compareTrees(project1, project2);
+							double kVal = compareTrees(project1, project2);
 						}
 					} catch (CoreException e) {
 						e.printStackTrace();
@@ -47,9 +50,9 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 		}
 	}
 
-	private long compareTrees(IProject project1, IProject project2) throws JavaModelException {
+	private double compareTrees(IProject project1, IProject project2) throws JavaModelException {
 		// TODO Auto-generated method stub
-		long k = 0;
+		double k = 0;
 		IPackageFragment[] packages1 = JavaCore.create(project1).getPackageFragments();
 		IPackageFragment[] packages2 = JavaCore.create(project2).getPackageFragments();
 		for (IPackageFragment package1 : packages1) {
@@ -69,6 +72,9 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 								parse = parse(unit2);
 								parse.accept(visitor2);
 								k += calculateK(visitor1.getRoot(), visitor2.getRoot());
+								
+								System.out.println("in projects " + project1.getName() + ", " + project2.getName());
+								System.out.println("have k value: " + k); 
 							}
 						}
 					}
@@ -76,31 +82,30 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 			}
 		}
 		
-		System.out.println("in projects " + project1.getName() + ", " + project2.getName());
-		System.out.println("have k value: " + k); 
-		
 		return k;
 	}
 
-	private long calculateK(ASTNodeWithChildren root1, ASTNodeWithChildren root2) {
-		long k = 0;
+	private double calculateK(ASTNodeWithChildren root1, ASTNodeWithChildren root2) {
+		double k = 0;
 		for(ASTNodeWithChildren node1 : root1) {
 			for(ASTNodeWithChildren node2 : root2) {
-				k += c(node1, node2);
+				k += c(node1, node2, 0);
 			}
 		}
 		return k;
 	}
 
-	private long c(ASTNodeWithChildren node1, ASTNodeWithChildren node2) {
+	private double c(ASTNodeWithChildren node1, ASTNodeWithChildren node2, int depth) {
 		if(ASTNodeWithChildren.areTreesDifferent(node1, node2)) {
 			return 0;
 		} else {
-			long prod = 1;
+			double prod = DECAY_FACTOR;
 			List<ASTNodeWithChildren> children1 = node1.getChildren();
 			List<ASTNodeWithChildren> children2 = node2.getChildren();
-			for(int i = 0; i < children1.size(); i++) {
-				prod *= (1 + c(children1.get(i), children2.get(i)));
+			if(depth < THRESHOLD_DEPTH) {
+				for(int i = 0; i < children1.size(); i++) {
+					prod *= (1 + c(children1.get(i), children2.get(i), depth+1));
+				}
 			}
 			return prod;
 		}
