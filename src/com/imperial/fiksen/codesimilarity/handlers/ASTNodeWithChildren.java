@@ -39,11 +39,21 @@ public class ASTNodeWithChildren implements Iterable<ASTNodeWithChildren>{
 		}
 		for(int i = 0; i < children1.size(); i++) {
 			ASTNodeWithChildren child1 = children1.get(i);
-			ASTNodeWithChildren child2 = children2.get(i);
-			if(!child1.getNode().getClass().equals(child2.getNode().getClass())) {
+			boolean[] used = new boolean[children2.size()]; 
+			boolean matched = false;
+			for(int j = 0; j < children2.size(); j++) {
+				if(used[i]) continue;
+				ASTNodeWithChildren child2 = children2.get(i);
+				if(child1.getNode().getClass().equals(child2.getNode().getClass())
+						&& !areTreesDifferent(child1, child2)) {
+					matched = true;
+					used[j] = true;
+					break;
+				}
+			}
+			if(!matched) {
 				return true;
 			}
-			areTreesDifferent(child1, child2);
 		}
 		return false;
 	}
