@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.core.dom.Block;
+import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.WhileStatement;
@@ -36,6 +37,7 @@ public class SyntacticTreeBuilder extends TreeBuilder {
 				Block child = (Block) ((WhileStatement) stmt).getBody();
 				buildRegions(child.statements(), region.getChildren());
 				newRegion = true;
+				stmt = ((WhileStatement) stmt).getExpression();
 			}
 			region.addStatement(stmt);
 		}
@@ -65,6 +67,12 @@ public class SyntacticTreeBuilder extends TreeBuilder {
 		public List<RegionTreeNode> getChildren() {
 			return children;
 		}
+		
+	}
+
+	@Override
+	public void doStuff(CompilationUnit parse) {
+		// TODO Auto-generated method stub
 		
 	}
 

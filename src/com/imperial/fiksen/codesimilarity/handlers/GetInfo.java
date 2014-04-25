@@ -19,28 +19,20 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jface.text.Document;
 
+import parseTreeKernel.ParseTreeKernelSimilarityAnalyser;
+import comparison.SimilarityAnalyser;
 import comparison.TreeBuilder;
-
 import belkhoucheComparison.SyntacticTreeBuilder;
 
 public class GetInfo extends AbstractHandler {
-
-	private static final String JDT_NATURE = "org.eclipse.jdt.core.javanature";
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		IWorkspaceRoot root = workspace.getRoot();
 		IProject[] projects = root.getProjects();
-		for (IProject project : projects) {
-			try {
-				if (project.isNatureEnabled(JDT_NATURE)) {
-					analyseMethods(project);
-				}
-			} catch (CoreException e) {
-				e.printStackTrace();
-			}
-		}
+		SimilarityAnalyser analyser = new ParseTreeKernelSimilarityAnalyser();
+		analyser.analyse(projects);
 		return null;
 	}
 
@@ -60,14 +52,15 @@ public class GetInfo extends AbstractHandler {
 			CompilationUnit parse = parse(unit);
 			MethodVisitor visitor = new MethodVisitor();
 			parse.accept(visitor);
-			for (MethodDeclaration method : visitor.getMethods()) {
-				if(method.getName().toString().equals("testMethodBool")) {
-					System.out.println("HERE!");
-					builder.createTreeFromMethods(method);
-				}
-				//System.out.println(method.toString());
-				System.out.println(method.getBody().toString());
-			}
+			//builder.doStuff(parse);
+//			for (MethodDeclaration method : visitor.getMethods()) {
+//				if(method.getName().toString().equals("testMethodBool")) {
+//					System.out.println("HERE!");
+//					builder.createTreeFromMethods(method);
+//				}
+//				//System.out.println(method.toString());
+//				System.out.println(method.getBody().toString());
+//			}
 		}
 	}
 
