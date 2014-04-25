@@ -18,13 +18,13 @@ public class AllVisitor extends ASTVisitor {
 		} else {
 			root = nodeWC;
 		}
-		System.out.println("node type: " + node.getClass().getName());
+//		System.out.println("node type: " + node.getClass().getName());
 //		System.out.println("visited " + node.toString());
 		currentRootStack.push(nodeWC);
 	}
 	
 	public void postVisit(ASTNode node) {
-		System.out.println("node type: " + node.getClass().getName());
+//		System.out.println("node type: " + node.getClass().getName());
 		currentRootStack.pop();
 	}
 	

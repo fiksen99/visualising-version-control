@@ -1,12 +1,16 @@
 package com.imperial.fiksen.codesimilarity.handlers;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Stack;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 
 
-public class ASTNodeWithChildren {
+public class ASTNodeWithChildren implements Iterable<ASTNodeWithChildren>{
 	private ASTNode node;
 	private List<ASTNodeWithChildren> children;
 	
@@ -43,6 +47,46 @@ public class ASTNodeWithChildren {
 		}
 		return false;
 	}
+
+	@Override
+	public Iterator<ASTNodeWithChildren> iterator() {
+		return new ASTNWCIterator(this);
+	}
 	
+	//depth first search iterator (in-order)
+	public class ASTNWCIterator implements Iterator<ASTNodeWithChildren>{
+		
+		private LinkedList<ASTNodeWithChildren> nodes;
+		
+		protected ASTNWCIterator(ASTNodeWithChildren root) {
+			nodes = new LinkedList<ASTNodeWithChildren>();
+			addChildren(root);
+		}
+		
+		private void addChildren(ASTNodeWithChildren root) {
+			nodes.push(root);
+			for(ASTNodeWithChildren child : root.getChildren()) {
+				addChildren(child);
+			}
+		}
+
+		@Override
+		public boolean hasNext() {
+			return !nodes.isEmpty();
+		}
+
+		@Override
+		public ASTNodeWithChildren next() {
+			if(!hasNext()) throw new NoSuchElementException();
+			return nodes.removeFirst();
+			
+		}
+
+		@Override
+		public void remove() {
+			throw new UnsupportedOperationException();
+		}
+		
+	}
 
 }
