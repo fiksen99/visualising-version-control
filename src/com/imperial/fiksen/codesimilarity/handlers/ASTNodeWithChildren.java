@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Stack;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 
@@ -74,7 +73,7 @@ public class ASTNodeWithChildren implements Iterable<ASTNodeWithChildren>{
 		}
 		
 		private void addChildren(ASTNodeWithChildren root) {
-			nodes.push(root);
+			nodes.add(root);
 			for(ASTNodeWithChildren child : root.getChildren()) {
 				addChildren(child);
 			}
