@@ -23,13 +23,14 @@ import comparison.SimilarityAnalyser;
 
 public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 	
-	private static final double DECAY_FACTOR = 0.9;
-	private static final int THRESHOLD_DEPTH = 10;
+	private static final double DECAY_FACTOR = 0.3;
+	private static final int THRESHOLD_DEPTH = 3;
 	
-	Map<IProject, Map<IProject, Map<CompilationUnit, Double>>> scores; 
+	Map<String, Double> pairedScores;
+	
 	
 	public ParseTreeKernelSimilarityAnalyser() {
-		scores = new HashMap();
+		pairedScores = new HashMap<String, Double>();
 	}
 
 	@Override
@@ -40,8 +41,8 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 					try {
 						if (project1.isNatureEnabled(JDT_NATURE)
 								&& project2.isNatureEnabled(JDT_NATURE)) {
-							double sim = normaliseSimilarity(project1, project2);
 							System.out.println("in projects " + project1.getName() + ", " + project2.getName());
+							double sim = normaliseSimilarity(project1, project2);
 							System.out.println("have sim value: " + sim); 
 						}
 					} catch (CoreException e) {
@@ -53,12 +54,34 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 	}
 
 	private double normaliseSimilarity(IProject project1, IProject project2) throws JavaModelException {
-		double kVal = compareTrees(project1, project2);
-		return kVal/Math.sqrt(compareTrees(project1,project1)*compareTrees(project2,project2));
+		double k = getScore(project1, project2);
+		double p1Score = getScore(project1);
+		double p2Score = getScore(project2);
+		return k/Math.sqrt(p1Score*p2Score);
+	}
+	
+	private double getScore(IProject project) throws JavaModelException {
+		return getScore(project, project);
 	}
 
+	private double getScore(IProject project1, IProject project2) throws JavaModelException {
+		String name1 = project1.getName();
+		String name2 = project2.getName();
+		String combined = null;
+		if(name2.compareTo(name1) <= 0) {
+			combined = name1 + "/" + name2;
+		} else {
+			combined = name2 + "/" + name1;
+		}
+		Double score = this.pairedScores.get(combined);
+		if(score == null) {
+			score = compareTrees(project1, project2);
+			this.pairedScores.put(combined, score);
+		}
+		return score;
+	}
+	
 	private double compareTrees(IProject project1, IProject project2) throws JavaModelException {
-		// TODO Auto-generated method stub
 		double k = 0;
 		IPackageFragment[] packages1 = JavaCore.create(project1).getPackageFragments();
 		IPackageFragment[] packages2 = JavaCore.create(project2).getPackageFragments();
@@ -79,6 +102,7 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 								parse = parse(unit2);
 								parse.accept(visitor2);
 								k += calculateK(visitor1.getRoot(), visitor2.getRoot());
+								//System.out.println("loop iteration");
 							}
 						}
 					}
@@ -102,6 +126,7 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 	//TODO: broken something here, different values for t1 t2 vs t2 t1
 	private double c(ASTNodeWithChildren node1, ASTNodeWithChildren node2, int depth) {
 		if(node1.getNode().getClass().equals(node2.getNode().getClass())) {
+			//n1 and n2 are different
 			return 0;
 		} else {
 			double prod = DECAY_FACTOR;
