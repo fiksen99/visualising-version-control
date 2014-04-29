@@ -40,7 +40,9 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 					try {
 						if (project1.isNatureEnabled(JDT_NATURE)
 								&& project2.isNatureEnabled(JDT_NATURE)) {
-							double kVal = compareTrees(project1, project2);
+							double sim = normaliseSimilarity(project1, project2);
+							System.out.println("in projects " + project1.getName() + ", " + project2.getName());
+							System.out.println("have sim value: " + sim); 
 						}
 					} catch (CoreException e) {
 						e.printStackTrace();
@@ -48,6 +50,11 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 				}
 			}
 		}
+	}
+
+	private double normaliseSimilarity(IProject project1, IProject project2) throws JavaModelException {
+		double kVal = compareTrees(project1, project2);
+		return kVal/Math.sqrt(compareTrees(project1,project1)*compareTrees(project2,project2));
 	}
 
 	private double compareTrees(IProject project1, IProject project2) throws JavaModelException {
@@ -72,16 +79,12 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 								parse = parse(unit2);
 								parse.accept(visitor2);
 								k += calculateK(visitor1.getRoot(), visitor2.getRoot());
-								
-								System.out.println("in projects " + project1.getName() + ", " + project2.getName());
-								System.out.println("have k value: " + k); 
 							}
 						}
 					}
 				}
 			}
 		}
-		
 		return k;
 	}
 
@@ -95,8 +98,10 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 		return k;
 	}
 
+	
+	//TODO: broken something here, different values for t1 t2 vs t2 t1
 	private double c(ASTNodeWithChildren node1, ASTNodeWithChildren node2, int depth) {
-		if(ASTNodeWithChildren.areTreesDifferent(node1, node2)) {
+		if(node1.getNode().getClass().equals(node2.getNode().getClass())) {
 			return 0;
 		} else {
 			double prod = DECAY_FACTOR;
@@ -104,7 +109,14 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 			List<ASTNodeWithChildren> children2 = node2.getChildren();
 			if(depth < THRESHOLD_DEPTH) {
 				for(int i = 0; i < children1.size(); i++) {
-					prod *= (1 + c(children1.get(i), children2.get(i), depth+1));
+					double mean = 0;
+					for(int j = 0; j < children2.size(); j++) {
+						mean += c(children1.get(i), children2.get(j), depth+1);
+					}
+					if(children2.size() > 0) {
+						mean /= children2.size();
+					}
+					prod *= 1 + mean;
 				}
 			}
 			return prod;
