@@ -56,6 +56,23 @@ public class ASTNodeWithChildren implements Iterable<ASTNodeWithChildren>{
 		}
 		return false;
 	}
+	
+	public void printTree() {
+		System.out.println("0: " + ASTNode.nodeClassForType(this.node.getNodeType()));
+		printTree(children, 1);
+	}
+	
+	private void printTree(List<ASTNodeWithChildren> children, int depth) {
+		System.out.print(depth + ": ");
+		for(ASTNodeWithChildren child: children) {
+			System.out.print(ASTNode.nodeClassForType(child.node.getNodeType()).getSimpleName() + "\t");
+		}
+		System.out.println();
+		for(ASTNodeWithChildren child: children) {
+			printTree(child.children, depth+1);
+		}
+		
+	}
 
 	@Override
 	public Iterator<ASTNodeWithChildren> iterator() {
