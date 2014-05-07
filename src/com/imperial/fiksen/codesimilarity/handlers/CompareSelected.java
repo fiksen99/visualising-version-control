@@ -1,5 +1,6 @@
 package com.imperial.fiksen.codesimilarity.handlers;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.eclipse.core.commands.AbstractHandler;
@@ -11,6 +12,7 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaCore;
@@ -34,6 +36,7 @@ public class CompareSelected extends AbstractHandler {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
+		ArrayList<IProject> selectedProjects = new ArrayList<IProject>();
 	    ISelection selection = HandlerUtil.getActiveWorkbenchWindow(event)
 	            .getActivePage().getSelection();
         if (selection != null & selection instanceof IStructuredSelection) {
@@ -41,29 +44,18 @@ public class CompareSelected extends AbstractHandler {
           Iterator x = strucSelection.iterator();
           for (Iterator<Object> iterator = strucSelection.iterator(); iterator
               .hasNext();) {
-            ASTNode element = (ASTNode) iterator.next();
-            System.out.println(element.structuralPropertiesForType().toString());
-            if( element instanceof CompilationUnit ) {
-            	//((CompilationUnit) element).
+            Object element = iterator.next();
+            if(element instanceof IJavaElement) {
+            	IJavaElement i = (IJavaElement) element;
+            	IProject project = i.getJavaProject().getProject();
+            	selectedProjects.add(project);
             }
           }
         }
+        IProject[] projectsArr = selectedProjects.toArray(new IProject[selectedProjects.size()]);
+        SimilarityAnalyser analyser = new ParseTreeKernelSimilarityAnalyser();
+        analyser.analyse(projectsArr);
         return null;
-//		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-//		IWorkspaceRoot root = workspace.getRoot();
-//		IProject[] projects = root.getProjects();
-//		SimilarityAnalyser analyser = new ParseTreeKernelSimilarityAnalyser();
-//		analyser.analyse(projects);
-//		return null;
-	}
-
-	private void analyseMethods(IProject project) throws JavaModelException {
-		IPackageFragment[] packages = JavaCore.create(project).getPackageFragments();
-		for (IPackageFragment mypackage : packages) {
-			if (mypackage.getKind() == IPackageFragmentRoot.K_SOURCE) {
-				createAST(mypackage);
-			}
-		}
 	}
 
 	private void createAST(IPackageFragment mypackage) throws JavaModelException {
