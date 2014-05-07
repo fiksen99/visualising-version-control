@@ -1,7 +1,10 @@
 package com.imperial.fiksen.codesimilarity.handlers;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -36,7 +39,8 @@ public class CompareSelected extends AbstractHandler {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		ArrayList<IProject> selectedProjects = new ArrayList<IProject>();
+		//use a set so projects only appear once. linked to retain order for prettiness
+		Set<IProject> selectedProjects = new LinkedHashSet<IProject>();
 	    ISelection selection = HandlerUtil.getActiveWorkbenchWindow(event)
 	            .getActivePage().getSelection();
         if (selection != null & selection instanceof IStructuredSelection) {
@@ -45,6 +49,7 @@ public class CompareSelected extends AbstractHandler {
           for (Iterator<Object> iterator = strucSelection.iterator(); iterator
               .hasNext();) {
             Object element = iterator.next();
+            //if the selected item is part of a java project
             if(element instanceof IJavaElement) {
             	IJavaElement i = (IJavaElement) element;
             	IProject project = i.getJavaProject().getProject();
