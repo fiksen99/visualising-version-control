@@ -60,20 +60,14 @@ public class ResultsPrinter {
 			orderedProjects.size() != scores.length) {
 			throw new IllegalArgumentException("the list of names must be the same length as the scores");
 		}
-		System.out.print("            |");
+		fillWhiteSpace(0);
 		for(int i = 0; i < scores.length ; i++) {
 			String name = orderedProjects.get(i);
 			System.out.print(name);
-			for(int j = name.length(); j < MAX_LENGTH; j++) {
-				System.out.print(" ");
-			}
-			System.out.print("|");
+			fillWhiteSpace(name.length());
 		}
 		System.out.println();
-		for(int i = 0; i < MAX_LENGTH; i++) {
-			System.out.print("_");
-		}
-		System.out.print("|");
+		fillWhiteSpace(0, '_');
 		for(int i = 0; i < scores.length; i++) {
 			for(int j = 0; j < MAX_LENGTH; j++) {
 				System.out.print("_");
@@ -84,24 +78,30 @@ public class ResultsPrinter {
 		for(int i = 0; i < scores.length; i++) {
 			String name = orderedProjects.get(i);
 			System.out.print(name);
-			for(int j = name.length(); j < MAX_LENGTH; j++) {
-				System.out.print(" ");
-			}
-			System.out.print("|");
+			fillWhiteSpace(name.length());
 			for(int j = 0; j < scores[i].length; j++) {
-				String score = Double.toString(scores[i][j]);
+				String score = String.format("%1$,.3f", scores[i][j]);
 				if(score.length() < MAX_LENGTH) {
 					System.out.print(score);
-					for(int k = score.length(); k < MAX_LENGTH; k++) {
-						System.out.print(" ");
-					}
+					fillWhiteSpace(score.length());
 				} else {
 					System.out.print(score.substring(0, MAX_LENGTH));
+					System.out.print("|");
 				}
-				System.out.print("|");
 			}
 			System.out.println();
 		}
+	}
+	
+	private static void fillWhiteSpace(int startingIndex) {
+		fillWhiteSpace(startingIndex, ' ');
+	}
+	
+	private static void fillWhiteSpace(int startingIndex, char fillChar) {
+		for(int i = startingIndex; i < MAX_LENGTH; i++) {
+			System.out.print(fillChar);
+		}
+		System.out.print("|");		
 	}
 
 }
