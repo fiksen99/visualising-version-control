@@ -7,6 +7,8 @@ import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 
 public abstract class SimilarityAnalyser {
+	
+	public static final String RESULTS_SEPARATOR = "/";
 
 	protected static final String JDT_NATURE = "org.eclipse.jdt.core.javanature";
 	
