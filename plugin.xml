@@ -18,6 +18,10 @@
             id="com.imperial.fiksen.code-similarity.commands.astInfo"
             name="AST Info">
       </command>
+      <command
+            id="com.imperial.fiksen.code-similarity.commands.compareSelected"
+            name="Compare Selected">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.handlers">
@@ -28,6 +32,10 @@
       <handler
             class="com.imperial.fiksen.codesimilarity.handlers.GetInfo"
             commandId="com.imperial.fiksen.code-similarity.commands.astInfo">
+      </handler>
+      <handler
+            class="com.imperial.fiksen.codesimilarity.handlers.CompareSelected"
+            commandId="com.imperial.fiksen.code-similarity.commands.compareSelected">
       </handler>
    </extension>
    <extension
@@ -50,7 +58,7 @@
       <menuContribution
             locationURI="menu:org.eclipse.ui.main.menu?after=additions">
          <menu
-               label="Other My Menu"
+               label="Similarity TEST"
                mnemonic="M"
                id="com.imperial.fiksen.code-similarity.menus.otherMyMenu">
             <command
@@ -77,6 +85,24 @@
             </command>
          </toolbar>
       </menuContribution>
+      <menuContribution
+            allPopups="false"
+            locationURI="popup:org.eclipse.jdt.ui.PackageExplorer">
+         <command
+               commandId="com.imperial.fiksen.code-similarity.commands.compareSelected"
+               label="Compare Selected"
+               style="push">
+         </command>
+      </menuContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            class="com.imperial.fiksen.codesimilarity.handlers.ContextMenuView"
+            id="com.imperial.fiksen.code-similarity.view"
+            name="Similarity View"
+            restorable="true">
+      </view>
    </extension>
 
 </plugin>
