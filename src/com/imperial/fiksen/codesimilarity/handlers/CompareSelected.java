@@ -18,6 +18,7 @@ import comparison.SimilarityAnalyser;
 
 public class CompareSelected extends AbstractHandler {
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		//use a set so projects only appear once. linked to retain order for prettiness
@@ -26,9 +27,8 @@ public class CompareSelected extends AbstractHandler {
 	            .getActivePage().getSelection();
         if (selection != null & selection instanceof IStructuredSelection) {
           IStructuredSelection strucSelection = (IStructuredSelection) selection;
-          Iterator x = strucSelection.iterator();
-          for (Iterator<Object> iterator = strucSelection.iterator(); iterator
-              .hasNext();) {
+          Iterator<Object> iterator = strucSelection.iterator();
+          while(iterator.hasNext()) {
             Object element = iterator.next();
             //if the selected item is part of a java project
             if(element instanceof IJavaElement) {

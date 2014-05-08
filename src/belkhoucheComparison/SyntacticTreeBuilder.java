@@ -6,17 +6,13 @@ import java.util.List;
 import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.WhileStatement;
 
-import comparison.TreeBuilder;
-
-public class SyntacticTreeBuilder extends TreeBuilder {
+public class SyntacticTreeBuilder {
 	
 	List<RegionTreeNode> regionTreeNodes;
 	
 
-	@Override
 	public void createTreeFromMethods(MethodDeclaration method) {
 		@SuppressWarnings("unchecked")
 		List<Object> stmts = method.getBody().statements();
@@ -25,6 +21,7 @@ public class SyntacticTreeBuilder extends TreeBuilder {
 		buildRegions(stmts, regionTreeNodes);
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void buildRegions(List<Object> stmts, List<RegionTreeNode> thisLevel) {
 		boolean newRegion = false;
 		RegionTreeNode region = createNewRegion(thisLevel);
@@ -70,7 +67,6 @@ public class SyntacticTreeBuilder extends TreeBuilder {
 		
 	}
 
-	@Override
 	public void doStuff(CompilationUnit parse) {
 		// TODO Auto-generated method stub
 		

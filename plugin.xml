@@ -47,28 +47,11 @@
                mnemonic="M"
                id="com.imperial.fiksen.code-similarity.menus.otherMyMenu">
             <command
-                  commandId="com.imperial.fiksen.code-similarity.commands.sampleCommand"
-                  mnemonic="S"
-                  id="com.imperial.fiksen.code-similarity.menus.sampleCommand">
-            </command>
-            <command
                   commandId="com.imperial.fiksen.code-similarity.commands.astInfo"
                   id="com.imperial.fiksen.code-similarity.menus.astInfo"
                   mnemonic="A">
             </command>
          </menu>
-      </menuContribution>
-      <menuContribution
-            locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
-         <toolbar
-               id="com.imperial.fiksen.code-similarity.toolbars.sampleToolbar">
-            <command
-                  commandId="com.imperial.fiksen.code-similarity.commands.sampleCommand"
-                  icon="icons/sample.gif"
-                  tooltip="Say hello world"
-                  id="com.imperial.fiksen.code-similarity.toolbars.sampleCommand">
-            </command>
-         </toolbar>
       </menuContribution>
       <menuContribution
             allPopups="false"
