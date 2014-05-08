@@ -95,14 +95,5 @@
          </command>
       </menuContribution>
    </extension>
-   <extension
-         point="org.eclipse.ui.views">
-      <view
-            class="com.imperial.fiksen.codesimilarity.handlers.ContextMenuView"
-            id="com.imperial.fiksen.code-similarity.view"
-            name="Similarity View"
-            restorable="true">
-      </view>
-   </extension>
 
 </plugin>
