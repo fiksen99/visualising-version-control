@@ -9,11 +9,6 @@
             id="com.imperial.fiksen.code-similarity.commands.category">
       </category>
       <command
-            name="Sample Command"
-            categoryId="com.imperial.fiksen.code-similarity.commands.category"
-            id="com.imperial.fiksen.code-similarity.commands.sampleCommand">
-      </command>
-      <command
             categoryId="com.imperial.fiksen.code-similarity.commands.category"
             id="com.imperial.fiksen.code-similarity.commands.astInfo"
             name="AST Info">
@@ -26,10 +21,6 @@
    <extension
          point="org.eclipse.ui.handlers">
       <handler
-            commandId="com.imperial.fiksen.code-similarity.commands.sampleCommand"
-            class="com.imperial.fiksen.codesimilarity.handlers.SampleHandler">
-      </handler>
-      <handler
             class="com.imperial.fiksen.codesimilarity.handlers.GetInfo"
             commandId="com.imperial.fiksen.code-similarity.commands.astInfo">
       </handler>
@@ -40,12 +31,6 @@
    </extension>
    <extension
          point="org.eclipse.ui.bindings">
-      <key
-            commandId="com.imperial.fiksen.code-similarity.commands.sampleCommand"
-            contextId="org.eclipse.ui.contexts.window"
-            sequence="M1+6"
-            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">
-      </key>
       <key
             commandId="com.imperial.fiksen.code-similarity.commands.astInfo"
             contextId="org.eclipse.ui.contexts.window"

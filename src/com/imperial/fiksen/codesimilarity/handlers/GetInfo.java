@@ -36,47 +36,4 @@ public class GetInfo extends AbstractHandler {
 		return null;
 	}
 
-	private void analyseMethods(IProject project) throws JavaModelException {
-		IPackageFragment[] packages = JavaCore.create(project).getPackageFragments();
-		for (IPackageFragment mypackage : packages) {
-			if (mypackage.getKind() == IPackageFragmentRoot.K_SOURCE) {
-				createAST(mypackage);
-			}
-		}
-	}
-
-	private void createAST(IPackageFragment mypackage) throws JavaModelException {
-		TreeBuilder builder = new SyntacticTreeBuilder();
-		for (ICompilationUnit unit : mypackage.getCompilationUnits()) {
-			printCompilationUnitDetails(unit);
-			CompilationUnit parse = parse(unit);
-			MethodVisitor visitor = new MethodVisitor();
-			parse.accept(visitor);
-			//builder.doStuff(parse);
-//			for (MethodDeclaration method : visitor.getMethods()) {
-//				if(method.getName().toString().equals("testMethodBool")) {
-//					System.out.println("HERE!");
-//					builder.createTreeFromMethods(method);
-//				}
-//				//System.out.println(method.toString());
-//				System.out.println(method.getBody().toString());
-//			}
-		}
-	}
-
-	private CompilationUnit parse(ICompilationUnit unit) {
-		ASTParser parser = ASTParser.newParser(AST.JLS4);
-		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		parser.setSource(unit);
-		parser.setResolveBindings(true);
-		return (CompilationUnit) parser.createAST(null);
-	}
-
-
-    private void printCompilationUnitDetails(ICompilationUnit unit)
-        throws JavaModelException {
-      System.out.println("Source file " + unit.getElementName());
-      Document doc = new Document(unit.getSource());
-      System.out.println("Has number of lines: " + doc.getNumberOfLines());
-    }
 }
