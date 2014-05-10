@@ -67,9 +67,4 @@ public class SyntacticTreeBuilder {
 		
 	}
 
-	public void doStuff(CompilationUnit parse) {
-		// TODO Auto-generated method stub
-		
-	}
-
 }
