@@ -90,16 +90,21 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 		}
 		Double score = this.pairedScores.get(combined);
 		if(score == null) {
-			score = compareTrees(project1, project2);
+			score = compareProjects(project1, project2);
 			this.pairedScores.put(combined, score);
 		}
 		return score;
 	}
 	
-	private double compareTrees(IProject project1, IProject project2) throws JavaModelException {
-		double k = 0;
+	private double compareProjects(IProject project1, IProject project2) throws JavaModelException {
 		IPackageFragment[] packages1 = JavaCore.create(project1).getPackageFragments();
 		IPackageFragment[] packages2 = JavaCore.create(project2).getPackageFragments();
+		return comparePackages(packages1, packages2);
+	}
+
+	private double comparePackages(IPackageFragment[] packages1,
+			IPackageFragment[] packages2) throws JavaModelException {
+		double k = 0;
 		for (IPackageFragment package1 : packages1) {
 			for (IPackageFragment package2 : packages2) {
 				if (package1.getKind() == IPackageFragmentRoot.K_SOURCE
@@ -121,6 +126,7 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 			}
 		}
 		return k;
+		
 	}
 
 	private double calculateK(ASTNodeWithChildren root1, ASTNodeWithChildren root2) {
@@ -133,8 +139,6 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 		return k;
 	}
 
-	
-	//TODO: broken something here, different values for t1 t2 vs t2 t1
 	private double c(ASTNodeWithChildren node1, ASTNodeWithChildren node2, int depth) {
 		if(node1.getNode().getClass().equals(node2.getNode().getClass())) {
 			//n1 and n2 are different
