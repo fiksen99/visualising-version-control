@@ -18,6 +18,7 @@ public class GetInfo extends AbstractHandler {
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		IWorkspaceRoot root = workspace.getRoot();
 		IProject[] projects = root.getProjects();
+		//TODO: dependency injection of analyser
 		SimilarityAnalyser analyser = new ParseTreeKernelSimilarityAnalyser();
 		analyser.analyse(projects);
 		return null;
