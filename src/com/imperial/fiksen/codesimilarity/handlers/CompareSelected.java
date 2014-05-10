@@ -13,8 +13,8 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.handlers.HandlerUtil;
 
-import parseTreeKernel.ParseTreeKernelSimilarityAnalyser;
-import comparison.SimilarityAnalyser;
+import com.imperial.fiksen.codesimilarity.analysers.SimilarityAnalyser;
+import com.imperial.fiksen.codesimilarity.parseTreeKernel.ParseTreeKernelSimilarityAnalyser;
 
 public class CompareSelected extends AbstractHandler {
 

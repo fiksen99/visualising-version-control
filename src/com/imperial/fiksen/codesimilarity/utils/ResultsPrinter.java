@@ -1,4 +1,4 @@
-package utils;
+package com.imperial.fiksen.codesimilarity.utils;
 
 import java.util.List;
 

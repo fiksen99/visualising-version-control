@@ -7,8 +7,9 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
-import parseTreeKernel.ParseTreeKernelSimilarityAnalyser;
-import comparison.SimilarityAnalyser;
+
+import com.imperial.fiksen.codesimilarity.analysers.SimilarityAnalyser;
+import com.imperial.fiksen.codesimilarity.parseTreeKernel.ParseTreeKernelSimilarityAnalyser;
 
 public class GetInfo extends AbstractHandler {
 

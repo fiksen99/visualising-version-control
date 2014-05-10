@@ -1,4 +1,4 @@
-package parseTreeKernel;
+package com.imperial.fiksen.codesimilarity.parseTreeKernel;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -14,9 +14,9 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 
-import com.imperial.fiksen.codesimilarity.handlers.ASTNodeWithChildren;
-import com.imperial.fiksen.codesimilarity.handlers.AllNodeVisitor;
-import comparison.SimilarityAnalyser;
+import com.imperial.fiksen.codesimilarity.analysers.SimilarityAnalyser;
+import com.imperial.fiksen.codesimilarity.treemanipulation.ASTNodeWithChildren;
+import com.imperial.fiksen.codesimilarity.treemanipulation.AllNodeVisitor;
 
 public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 	
@@ -65,7 +65,7 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 				}
 			}
 		}
-		utils.ResultsPrinter.printScore(scores, orderedProjects);
+		com.imperial.fiksen.codesimilarity.utils.ResultsPrinter.printScore(scores, orderedProjects);
 	}
 
 	private double normaliseSimilarity(IProject project1, IProject project2) throws JavaModelException {

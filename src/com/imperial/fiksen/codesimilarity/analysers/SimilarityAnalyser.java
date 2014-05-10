@@ -1,4 +1,4 @@
-package comparison;
+package com.imperial.fiksen.codesimilarity.analysers;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jdt.core.ICompilationUnit;

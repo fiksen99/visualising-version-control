@@ -1,4 +1,4 @@
-package belkhoucheComparison;
+package com.imperial.fiksen.codesimilarity.belkhoucheComparison;
 
 import java.util.ArrayList;
 import java.util.List;
