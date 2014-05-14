@@ -20,8 +20,8 @@ import com.imperial.fiksen.codesimilarity.treemanipulation.AllNodeVisitor;
 
 public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 	
-	private static final double DECAY_FACTOR = 0.9;
-	private static final int THRESHOLD_DEPTH = 4;
+	private static final double DECAY_FACTOR = 0.15;
+	private static final int THRESHOLD_DEPTH = 3;
 	
 	private Map<String, Double> pairedScores;
 	private double[][] scores;
