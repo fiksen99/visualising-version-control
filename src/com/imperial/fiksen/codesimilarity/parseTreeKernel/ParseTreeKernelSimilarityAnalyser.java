@@ -140,7 +140,6 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 	}
 
 	private double c(ASTNodeWithChildren node1, ASTNodeWithChildren node2, int depth) {
-		if(node1.getNode().getClass().equals(node2.getNode().getClass())) {
 		if(!node1.getNode().getClass().equals(node2.getNode().getClass())) {
 			//n1 and n2 are different
 			return 0;
