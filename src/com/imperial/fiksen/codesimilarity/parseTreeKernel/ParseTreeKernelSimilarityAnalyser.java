@@ -133,7 +133,7 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 		double k = 0;
 		for(ASTNodeWithChildren node1 : root1) {
 			for(ASTNodeWithChildren node2 : root2) {
-				k += c(node1, node2, 0);
+				k += c(node1, node2, 1);
 			}
 		}
 		return k;
