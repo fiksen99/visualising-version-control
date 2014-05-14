@@ -111,7 +111,7 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 						&& package2.getKind() == IPackageFragmentRoot.K_SOURCE) {
 					for (ICompilationUnit unit1 : package1.getCompilationUnits()) {
 						for (ICompilationUnit unit2 : package2.getCompilationUnits()) {
-							if (unit1.getElementName().equals(unit2.getElementName())) {
+							if (unit1.getElementName().equals(unit2.getElementName()) && unit1.getElementName().equals("RecursionLibrary.java")) {
 								AllNodeVisitor visitor1 = new AllNodeVisitor();
 								AllNodeVisitor visitor2 = new AllNodeVisitor();
 								ASTNode parse = parse(unit1);
