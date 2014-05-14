@@ -12,7 +12,7 @@ import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.ASTNode;
 
 import com.imperial.fiksen.codesimilarity.analysers.SimilarityAnalyser;
 import com.imperial.fiksen.codesimilarity.treemanipulation.ASTNodeWithChildren;
@@ -114,7 +114,7 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 							if (unit1.getElementName().equals(unit2.getElementName())) {
 								AllNodeVisitor visitor1 = new AllNodeVisitor();
 								AllNodeVisitor visitor2 = new AllNodeVisitor();
-								CompilationUnit parse = parse(unit1);
+								ASTNode parse = parse(unit1);
 								parse.accept(visitor1);
 								parse = parse(unit2);
 								parse.accept(visitor2);
