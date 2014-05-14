@@ -149,14 +149,12 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 			List<ASTNodeWithChildren> children2 = node2.getChildren();
 			if(depth < THRESHOLD_DEPTH) {
 				for(int i = 0; i < children1.size(); i++) {
-					double mean = 0;
+					double max = 0;
+					ASTNodeWithChildren childNode1 = children1.get(i);
 					for(int j = 0; j < children2.size(); j++) {
-						mean += c(children1.get(i), children2.get(j), depth+1);
+						max = Math.max(c(childNode1, children2.get(j), depth+1), max);
 					}
-					if(children2.size() > 0) {
-						mean /= children2.size();
-					}
-					prod *= 1 + mean;
+					prod *= 1 + max;
 				}
 			}
 			return prod;
