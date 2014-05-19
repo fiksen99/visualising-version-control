@@ -57,6 +57,8 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 		}
 		
 		scores = new double [total][total];
+		double i = 0;
+		int notify = 5;
 		toIgnore = new HashSet<Integer>();
 		for (IProject project1 : projects) {
 			String project1Name = project1.getName();
@@ -74,6 +76,11 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 							toIgnore.add(index2);
 						}
 						min = Math.min(min, sim);
+						i+=1.0;
+						if(i/(total*total)*100 > notify) {
+							System.out.println(notify + "% complete");
+							notify = Math.max(notify+5, (int)Math.floor(i/(total*total)*100));
+						}
 					}
 				} catch (CoreException e) {
 					e.printStackTrace();
@@ -82,6 +89,14 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 		}
 		normaliseAllScores();
 		com.imperial.fiksen.codesimilarity.utils.ResultsPrinter.print(scores, orderedProjects, toIgnore);
+	}
+
+	private int updateProgress(double i, int notify) {
+		if(i/(total*total)*100 > notify) {
+			System.out.println(notify + "% complete");
+			return Math.max(notify+5, (int)Math.floor(i/(total*total)*100));
+		}		
+		return notify;
 	}
 
 	private void normaliseAllScores() {
