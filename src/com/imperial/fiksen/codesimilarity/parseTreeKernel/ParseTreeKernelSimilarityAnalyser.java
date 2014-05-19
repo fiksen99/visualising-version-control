@@ -28,6 +28,7 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 	
 	private int total;
 	
+	private double min = 1.0;
 	
 	public ParseTreeKernelSimilarityAnalyser() {
 		total = 0;
@@ -72,14 +73,26 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 						if(hasSkeleton && isSkeleton && sim == 1.0) {
 							toIgnore.add(index2);
 						}
+						min = Math.min(min, sim);
 					}
 				} catch (CoreException e) {
 					e.printStackTrace();
 				}
 			}
 		}
-		com.imperial.fiksen.codesimilarity.utils.ResultsPrinter.printScore(scores, orderedProjects);
+		normaliseAllScores();
 		com.imperial.fiksen.codesimilarity.utils.ResultsPrinter.print(scores, orderedProjects, toIgnore);
+	}
+
+	private void normaliseAllScores() {
+		double ePowMin = Math.pow(Math.E, min);
+		for(int i = 0; i < scores.length; i++) {
+			for(int j = 0; j < scores[i].length; j++) {
+				//scores[i][j] = 1.0-(Math.pow(Math.E, scores[i][j])-ePowMin)/(Math.E-ePowMin);
+				//scores[i][j] = (scores[i][j]-min)/(1-min);
+				scores[i][j] = 1.0-scores[i][j];
+			}
+		}
 	}
 
 	private double normaliseSimilarity(IProject project1, IProject project2) throws JavaModelException {
