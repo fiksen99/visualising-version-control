@@ -1,6 +1,9 @@
 package com.imperial.fiksen.codesimilarity.utils;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class ResultsPrinter {
 	
@@ -12,13 +15,7 @@ public class ResultsPrinter {
 			orderedProjects.size() != scores.length) {
 			throw new IllegalArgumentException("the list of names must be the same length as the scores");
 		}
-		fillWhiteSpace(0);
-		for(int i = 0; i < scores.length ; i++) {
-			String name = orderedProjects.get(i);
-			System.out.print(name);
-			fillWhiteSpace(name.length());
-		}
-		System.out.println();
+		printColNames(scores, orderedProjects);
 		fillWhiteSpace(0, '_');
 		for(int i = 0; i < scores.length; i++) {
 			for(int j = 0; j < MAX_LENGTH; j++) {
@@ -43,8 +40,20 @@ public class ResultsPrinter {
 			}
 			System.out.println();
 		}
+		printColNames(scores, orderedProjects);
 	}
 	
+	private static void printColNames(double[][] scores,
+			List<String> orderedProjects) {
+		fillWhiteSpace(0);
+		for(int i = 0; i < scores.length ; i++) {
+			String name = orderedProjects.get(i);
+			System.out.print(name);
+			fillWhiteSpace(name.length());
+		}
+		System.out.println();		
+	}
+
 	private static void fillWhiteSpace(int startingIndex) {
 		fillWhiteSpace(startingIndex, ' ');
 	}
@@ -56,4 +65,73 @@ public class ResultsPrinter {
 		System.out.print("|");		
 	}
 
+	public static void tsvPrint(double[][] scores, List<String> orderedProjects) {
+		System.out.print("[");
+		for(String project: orderedProjects) {
+			System.out.print("'"+project+"', ");
+		}
+		System.out.println("]");
+		System.out.print("[");
+		for(String project: orderedProjects) {
+			System.out.print("'"+project+"', ");
+		}
+		System.out.println("]");
+		System.out.println(orderedProjects.size());
+		System.out.print("[");
+		for(int i = 0; i < scores.length; i++) {
+			System.out.print("[");
+			for(int j = 0; j <i; j++) {
+				System.out.print(scores[i][j] + ",");
+//				if(j == i) {
+//					System.out.println(i + "\t" + orderedProjects.get(i) + "\t" + j + "\t" + orderedProjects.get(j) + "\t" + scores[i][j]);
+//				} else {
+//					System.out.println(i + "\t" + orderedProjects.get(i) + "\t" + j + "\t" + orderedProjects.get(j) + "\t" + scores[i][j]);
+//					System.out.println(j + "\t" + orderedProjects.get(j) + "\t" + i + "\t" + orderedProjects.get(i) + "\t" + scores[i][j]);
+//				}
+			}
+			System.out.println("],");
+		}
+		System.out.println("]");
+	}
+	
+	public static void orangeDistanceTablePrint(double[][] scores, List<String> orderedProjects, Set<Integer> toIgnore) {
+		System.out.println(scores.length-toIgnore.size() + " labeled");
+		for(int i = 0; i < scores.length; i++) {
+			if(!toIgnore.contains(i)) {
+				System.out.print(orderedProjects.get(i) + "\t");
+				for(int j = 0; j <= i; j++) {
+					if(!toIgnore.contains(j)) {
+						String score = String.format("%1$,.6f", scores[i][j]);
+						System.out.print(score);
+						if(i!=j)
+							System.out.print("\t");
+					}
+				}
+				System.out.println();
+			}
+		}
+	}
+	
+	public static void matlabDistanceTablePrint(double[][] scores, List<String> orderedProjects, Set<Integer> toIgnore) {
+		for(int i = 0; i < scores.length; i++) {
+			if(!toIgnore.contains(i)) {
+				System.out.print("\t");
+				for(int j = 0; j < scores[i].length; j++) {
+					if(!toIgnore.contains(j)) {
+						String score = String.format("%1$,.6f", scores[i][j]);
+						System.out.print(score);
+						if(j!=scores[i].length-1)
+							System.out.print("\t");
+					}
+				}
+				System.out.println();
+			}
+		}
+	}
+
+	public static void print(double[][] scores, List<String> orderedProjects,
+			Set<Integer> toIgnore) {
+		orangeDistanceTablePrint(scores, orderedProjects, toIgnore);
+	}
+	
 }

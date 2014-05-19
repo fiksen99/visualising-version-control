@@ -37,11 +37,16 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 	@Override
 	public void analyse(IProject[] projects) {
 		List<String> orderedProjects = new LinkedList<String>();
+		boolean hasSkeleton = false;
 		for (int i = 0 ; i < projects.length ; i++) {
 			IProject project = projects[i];
 			try {
 				if (project.isNatureEnabled(JDT_NATURE)) {
-					orderedProjects.add(project.getName());
+					String projectName = project.getName();
+					if(projectName.endsWith(SKELETON_PROJECT)) {
+						hasSkeleton = true;
+					}
+					orderedProjects.add(projectName);
 					total++;
 				}
 			} catch (CoreException e) {
@@ -49,16 +54,24 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 				e.printStackTrace();
 			}
 		}
+		
 		scores = new double [total][total];
+		toIgnore = new HashSet<Integer>();
 		for (IProject project1 : projects) {
+			String project1Name = project1.getName();
+			boolean isSkeleton = project1Name.endsWith(SKELETON_PROJECT);
 			for (IProject project2 : projects) {
 				try {
 					if (project1.isNatureEnabled(JDT_NATURE)
 							&& project2.isNatureEnabled(JDT_NATURE)) {
+						String project2Name = project2.getName();
 						double sim = normaliseSimilarity(project1, project2);
-						int index1 = orderedProjects.lastIndexOf(project1.getName());
-						int index2 = orderedProjects.lastIndexOf(project2.getName());
+						int index1 = orderedProjects.lastIndexOf(project1Name);
+						int index2 = orderedProjects.lastIndexOf(project2Name);
 						scores[index1][index2] = sim;
+						if(hasSkeleton && isSkeleton && sim == 1.0) {
+							toIgnore.add(index2);
+						}
 					}
 				} catch (CoreException e) {
 					e.printStackTrace();
@@ -66,6 +79,7 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 			}
 		}
 		com.imperial.fiksen.codesimilarity.utils.ResultsPrinter.printScore(scores, orderedProjects);
+		com.imperial.fiksen.codesimilarity.utils.ResultsPrinter.print(scores, orderedProjects, toIgnore);
 	}
 
 	private double normaliseSimilarity(IProject project1, IProject project2) throws JavaModelException {
