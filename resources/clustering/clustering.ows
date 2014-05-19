@@ -1,0 +1,285 @@
+<?xml version='1.0' encoding='utf-8'?>
+<scheme description="Hierarchical clustering. The schema clusters the data items in Iris data set by first estimating the distances between data instances. Distance matrix is passed to hierarchical clustering, which renders the dendrogram. Select different parts of the dendrogram to further analyze the corresponding data.&#10;&#10;Notice that hierarchical clustering can only handle small data sets, that is, those that contain only a small number of data instances. For larger data sets the distance matrix may get too big and may not fit in the memory. An alternative method that can consider such data sets is k-means clustering." title="Hierarchical Clustering" version="2.0">
+	<nodes>
+		<node id="0" name="Hierarchical Clustering" position="(197.0, 310.0)" project_name="Orange" qualified_name="Orange.OrangeWidgets.Unsupervised.OWHierarchicalClustering.OWHierarchicalClustering" title="Hierarchical Clustering" version="" />
+		<node id="1" name="Distance Map" position="(170.0, 163.0)" project_name="Orange" qualified_name="Orange.OrangeWidgets.Unsupervised.OWDistanceMap.OWDistanceMap" title="Distance Map" version="" />
+		<node id="2" name="Data Table" position="(398.0, 312.0)" project_name="Orange" qualified_name="Orange.OrangeWidgets.Data.OWDataTable.OWDataTable" title="Data Table (1)" version="" />
+		<node id="3" name="Distance File" position="(17.0, 310.0)" project_name="Orange" qualified_name="Orange.OrangeWidgets.Unsupervised.OWDistanceFile.OWDistanceFile" title="Distance File" version="" />
+		<node id="4" name="Linear Projection" position="(146.0, 449.0)" project_name="Orange" qualified_name="Orange.OrangeWidgets.Visualize.OWLinProj.OWLinProj" title="Linear Projection" version="" />
+	</nodes>
+	<links>
+		<link enabled="true" id="0" sink_channel="Distances" sink_node_id="1" source_channel="Distances" source_node_id="3" />
+		<link enabled="true" id="1" sink_channel="Distances" sink_node_id="0" source_channel="Distances" source_node_id="3" />
+		<link enabled="true" id="2" sink_channel="Data" sink_node_id="2" source_channel="Centroids" source_node_id="0" />
+		<link enabled="true" id="3" sink_channel="Distances" sink_node_id="4" source_channel="Distances" source_node_id="3" />
+	</links>
+	<annotations />
+	<thumbnail />
+	<node_properties>
+		<properties format="pickle" node_id="0">(dp1
+S'addIdAs'
+p2
+I1
+sS'widgetShown'
+p3
+I0
+sS'TextSize'
+p4
+I8
+sS'localContextsVersion'
+p5
+(I100
+I0
+tp6
+sS'LineSpacing'
+p7
+I4
+sS'HDSize'
+p8
+I500
+sS'PrintDepth'
+p9
+I50
+sS'AppendClusters'
+p10
+I01
+sS'__settingsDataVersion'
+p11
+NsS'VDSize'
+p12
+I800
+sS'ClassifyName'
+p13
+S'HC_class'
+p14
+sS'savedWidgetGeometry'
+p15
+S'\x01\xd9\xd0\xcb\x00\x01\x00\x00\x00\x00\x02\xaa\x00\x00\x00\xf5\x00\x00\x06\xaa\x00\x00\x04.\x00\x00\x02\xaa\x00\x00\x01\x0b\x00\x00\x06\xaa\x00\x00\x04.\x00\x00\x00\x00\x00\x00'
+p16
+sS'CommitOnChange'
+p17
+I01
+sS'PrintDepthCheck'
+p18
+I00
+sS'SelectionMode'
+p19
+I01
+sS'AutoResize'
+p20
+I0
+sS'localContexts'
+p21
+(lp22
+(iOWContexts
+Context
+p23
+(dp24
+S'metas'
+p25
+(dp26
+sS'values'
+p27
+(dp28
+S'Annotation'
+p29
+(I2
+I-2
+tp30
+ssS'time'
+p31
+F1400447979.6615009
+sS'attributes'
+p32
+(dp33
+S'label'
+p34
+cOrange.orange
+__pickleLoaderNamedConstants
+p35
+(S'Variable_Type'
+(I6
+ttRp36
+ssS'noCopy'
+p37
+(lp38
+S'orderedDomain'
+p39
+asba(iOWContexts
+Context
+p40
+(dp41
+g25
+(dp42
+sg27
+(dp43
+g29
+(I6
+I-2
+tp44
+ssg31
+F1400420389.554579
+sg32
+(dp45
+S'petal length'
+p46
+g35
+(S'Variable_Type'
+(I2
+ttRp47
+sS'petal width'
+p48
+g35
+(S'Variable_Type'
+(I2
+ttRp49
+sS'sepal width'
+p50
+g35
+(S'Variable_Type'
+(I2
+ttRp51
+sS'sepal length'
+p52
+g35
+(S'Variable_Type'
+(I2
+ttRp53
+sS'iris'
+p54
+g35
+(S'Variable_Type'
+(I1
+ttRp55
+ssg37
+(lp56
+g39
+asbasg29
+I2
+sS'Linkage'
+p57
+I3
+sS'ManualHorSize'
+p58
+I00
+s.</properties>
+		<properties format="literal" node_id="1">{'CutEnabled': True, 'ShowItemsInBalloon': 1, 'CutLow': 0.0, '__settingsDataVersion': None, 'selectedSchemaIndex': 0, 'CellHeight': 12.0, 'Sort': 4, 'ShowLegend': 1, 'ShowLabels': 1, 'savedGrid': True, 'savedWidgetGeometry': '\x01\xd9\xd0\xcb\x00\x01\x00\x00\x00\x00\x01\t\x00\x00\x00\x93\x00\x00\x07\x88\x00\x00\x04\x96\x00\x00\x01\t\x00\x00\x00\xa9\x00\x00\x07\x88\x00\x00\x04\x96\x00\x00\x00\x00\x00\x00', 'colorSettings': [['temp', [[('unknown', 4288716964L), ('overflow', 4294377216L), ('underflow', 4294967295L), ('background', 4294967295L), ('cellOutline', 4288716964L), ('selection', 4278190080L)], [], [], [('palette', (4278190335L, 4294961152L, True, [(4294901760L, True), (4278190080L, False), (4278255360L, 1)]))]]], ('Default', [[('unknown', 4288716964L), ('overflow', 4278190080L), ('underflow', 4294967295L), ('background', 4294967295L), ('cellOutline', 4288716964L), ('selection', 4278190080L)], [], [], [('palette', (4278190335L, 4294967040L, 0, [(4294901760L, 1), (4278190080L, 1), (4278255360L, 1)]))]])], 'Grid': False, 'SquareCells': True, 'CellWidth': 12.0, 'palette': [4278190335L, 4278386939L, 4278583544L, 4278780149L, 4278976754L, 4279173359L, 4279369964L, 4279566569L, 4279763174L, 4279959779L, 4280156384L, 4280352989L, 4280549594L, 4280746199L, 4280942804L, 4281139409L, 4281336014L, 4281532619L, 4281729224L, 4281925829L, 4282122434L, 4282319039L, 4282515644L, 4282712249L, 4282908854L, 4283105459L, 4283302064L, 4283498669L, 4283760810L, 4283957414L, 4284154019L, 4284350624L, 4284547229L, 4284743834L, 4284940439L, 4285137044L, 4285333649L, 4285530254L, 4285726859L, 4285923464L, 4286120069L, 4286316674L, 4286513279L, 4286709884L, 4286906489L, 4287103094L, 4287299699L, 4287496304L, 4287692909L, 4287889514L, 4288086119L, 4288282724L, 4288479329L, 4288675934L, 4288872539L, 4289069144L, 4289331285L, 4289527889L, 4289724494L, 4289921099L, 4290117704L, 4290314309L, 4290510914L, 4290707519L, 4290904124L, 4291100729L, 4291297334L, 4291493939L, 4291690544L, 4291887149L, 4292083754L, 4292280359L, 4292476964L, 4292673569L, 4292870174L, 4293066779L, 4293263384L, 4293459989L, 4293656594L, 4293853199L, 4294049804L, 4294246409L, 4294443014L, 4294639619L, 4294901760L, 4294640384L, 4294444544L, 4294248704L, 4294052864L, 4293857024L, 4293661184L, 4293465344L, 4293269504L, 4293073664L, 4292877824L, 4292681984L, 4292486144L, 4292290304L, 4292094464L, 4291898624L, 4291702784L, 4291506944L, 4291311104L, 4291115264L, 4290919424L, 4290723584L, 4290527744L, 4290331904L, 4290136064L, 4289940224L, 4289744384L, 4289548544L, 4289352704L, 4289091584L, 4288895744L, 4288699904L, 4288504064L, 4288308224L, 4288112384L, 4287916544L, 4287720704L, 4287524864L, 4287329024L, 4287133184L, 4286937344L, 4286741504L, 4286545664L, 4286349824L, 4286153984L, 4285958144L, 4285762304L, 4285566464L, 4285370624L, 4285174784L, 4284978944L, 4284783104L, 4284587264L, 4284391424L, 4284195584L, 4283999744L, 4283738624L, 4283542784L, 4283346944L, 4283151104L, 4282955264L, 4282759424L, 4282563584L, 4282367744L, 4282171904L, 4281976064L, 4281780224L, 4281584384L, 4281388544L, 4281192704L, 4280996864L, 4280801024L, 4280605184L, 4280409344L, 4280213504L, 4280017664L, 4279821824L, 4279625984L, 4279430144L, 4279234304L, 4279038464L, 4278842624L, 4278646784L, 4278450944L, 4278255360L, 4278451712L, 4278648320L, 4278844928L, 4279041280L, 4279237888L, 4279434496L, 4279631104L, 4279827456L, 4280024064L, 4280220672L, 4280417024L, 4280613632L, 4280810240L, 4281006848L, 4281203200L, 4281399808L, 4281596416L, 4281793024L, 4281989376L, 4282185984L, 4282382592L, 4282578944L, 4282775552L, 4282972160L, 4283168768L, 4283365120L, 4283561728L, 4283823872L, 4284020480L, 4284216832L, 4284413440L, 4284610048L, 4284806400L, 4285003008L, 4285199616L, 4285396224L, 4285592576L, 4285789184L, 4285985792L, 4286182400L, 4286378752L, 4286575360L, 4286771968L, 4286968320L, 4287164928L, 4287361536L, 4287558144L, 4287754496L, 4287951104L, 4288147712L, 4288344320L, 4288540672L, 4288737280L, 4288933888L, 4289130240L, 4289326848L, 4289588992L, 4289785600L, 4289981952L, 4290178560L, 4290375168L, 4290571776L, 4290768128L, 4290964736L, 4291161344L, 4291357696L, 4291554304L, 4291750912L, 4291947520L, 4292143872L, 4292340480L, 4292537088L, 4292733696L, 4292930048L, 4293126656L, 4293323264L, 4293519616L, 4293716224L, 4293912832L, 4294109440L, 4294305792L, 4294967295L, 4294967295L, 4294967295L, 4294967295L, 4294377216L, 4288716964L], 'widgetShown': 0, 'Merge': 1.0, 'SendOnRelease': 1, 'Gamma': 1.0, 'CutHigh': 0.1, 'ShowBalloon': 1}</properties>
+		<properties format="literal" node_id="2">{'autoCommit': False, 'showMeta': 1, 'selectRows': True, 'distColorRgb': (220, 220, 220, 255), 'showAttributeLabels': True, '__settingsDataVersion': None, 'showDistributions': True, 'widgetShown': 0, 'savedWidgetGeometry': '\x01\xd9\xd0\xcb\x00\x01\x00\x00\x00\x00\x00\x04\x00\x00\x00\x16\x00\x00\x03\x1f\x00\x00\x02W\x00\x00\x00\x04\x00\x00\x00,\x00\x00\x03\x1f\x00\x00\x02W\x00\x00\x00\x00\x00\x00', 'selectedSchemaIndex': 0, 'colorByClass': True}</properties>
+		<properties format="literal" node_id="3">{'normalizeMethod': 0, 'invertDistances': 0, '__settingsDataVersion': None, 'widgetShown': 0, 'savedWidgetGeometry': '\x01\xd9\xd0\xcb\x00\x01\x00\x00\x00\x00\x02\x8f\x00\x00\x01k\x00\x00\x03\xf1\x00\x00\x02\x8b\x00\x00\x02\x8f\x00\x00\x01\x81\x00\x00\x03\xf1\x00\x00\x02\x8b\x00\x00\x00\x00\x00\x00', 'invertMethod': 0, 'recentFiles': [u'/Users/adam/Programming/visualising-version-control/resources/whole_sample_loops.dst', u'/Users/adam/Programming/visualising-version-control/resources/whole_sample.dst', u'/Users/adam/Desktop/test.dst', u'/']}</properties>
+		<properties format="pickle" node_id="4">(dp1
+S'autoSendSelection'
+p2
+I1
+sS'addProjectedPositions'
+p3
+I0
+sS'__settingsDataVersion'
+p4
+NsS'selectedSchemaIndex'
+p5
+I0
+sS'localContextsVersion'
+p6
+(I100
+I0
+tp7
+sS'graph.pointWidth'
+p8
+I5
+sS'graph.showFilledSymbols'
+p9
+I1
+sS'graph.scaleFactor'
+p10
+F1
+sS'graph.alphaValue'
+p11
+I255
+sS'graph.squareGranularity'
+p12
+I3
+sS'colorSettings'
+p13
+NsS'graph.useAntialiasingvalueScalingType'
+p14
+NsS'graph.jitterSize'
+p15
+I10
+sS'graph.useDifferentColors'
+p16
+I1
+sS'graph.showProbabilities'
+p17
+I0
+sS'graph.tooltipValue'
+p18
+I0
+sS'widgetShown'
+p19
+I0
+sS'showAllAttributes'
+p20
+I0
+sS'graph.showLegend'
+p21
+I1
+sS'savedWidgetGeometry'
+p22
+S'\x01\xd9\xd0\xcb\x00\x01\x00\x00\x00\x00\x01~\x00\x00\x00\x92\x00\x00\x05\x01\x00\x00\x03c\x00\x00\x01~\x00\x00\x00\xa8\x00\x00\x05\x01\x00\x00\x03c\x00\x00\x00\x00\x00\x00'
+p23
+sS'localContexts'
+p24
+(lp25
+(iOWContexts
+Context
+p26
+(dp27
+S'metas'
+p28
+(dp29
+sS'values'
+p30
+(dp31
+S'shownAttributes'
+p32
+(lp33
+sS'selectedShown'
+p34
+(lp35
+ssS'time'
+p36
+F1400436529.7720821
+sS'attributes'
+p37
+(dp38
+S'label'
+p39
+cOrange.orange
+__pickleLoaderNamedConstants
+p40
+(S'Variable_Type'
+(I6
+ttRp41
+ssS'noCopy'
+p42
+(lp43
+S'orderedDomain'
+p44
+asbasS'graph.spaceBetweenCells'
+p45
+I1
+sS'toolbarSelection'
+p46
+I0
+sS'graph.showValueLines'
+p47
+I0
+sS'graph.tooltipKind'
+p48
+I0
+sS'graph.useDifferentSymbols'
+p49
+I0
+s.</properties>
+	</node_properties>
+</scheme>
