@@ -26,7 +26,6 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 	private static final int THRESHOLD_DEPTH = 3;
 	
 	private Map<String, Double> pairedScores;
-	private double[][] scores;
 	
 	private int total;
 	
@@ -39,8 +38,8 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 
 	@Override
 	public void analyse(IProject[] projects) {
-		List<String> orderedProjects = new LinkedList<String>();
 		boolean hasSkeleton = false;
+		orderedProjects = new LinkedList<String>();
 		for (int i = 0 ; i < projects.length ; i++) {
 			IProject project = projects[i];
 			try {
