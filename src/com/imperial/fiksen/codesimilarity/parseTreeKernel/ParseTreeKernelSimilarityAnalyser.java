@@ -30,63 +30,78 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 	private int total;
 	
 	private double min = 1.0;
+	boolean recalculate;
+	
+	private Set<String> filesToIgnore;
 	
 	public ParseTreeKernelSimilarityAnalyser() {
 		total = 0;
 		pairedScores = new HashMap<String, Double>();
+		recalculate = true;
+		filesToIgnore = new HashSet<String>();
 	}
 
 	@Override
 	public void analyse(IProject[] projects) {
-		boolean hasSkeleton = false;
-		orderedProjects = new LinkedList<String>();
-		for (int i = 0 ; i < projects.length ; i++) {
-			IProject project = projects[i];
-			try {
-				if (project.isNatureEnabled(JDT_NATURE)) {
-					String projectName = project.getName();
-					if(projectName.endsWith(SKELETON_PROJECT)) {
-						hasSkeleton = true;
-					}
-					orderedProjects.add(projectName);
-					total++;
-				}
-			} catch (CoreException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		
-		scores = new double [total][total];
-		double i = 0;
-		int notify = 5;
-		toIgnore = new HashSet<Integer>();
-		for (IProject project1 : projects) {
-			String project1Name = project1.getName();
-			boolean isSkeleton = project1Name.endsWith(SKELETON_PROJECT);
-			for (IProject project2 : projects) {
+		if(recalculate) {
+			boolean hasSkeleton = false;
+			orderedProjects = new LinkedList<String>();
+			for (int i = 0 ; i < projects.length ; i++) {
+				IProject project = projects[i];
 				try {
-					if (project1.isNatureEnabled(JDT_NATURE)
-							&& project2.isNatureEnabled(JDT_NATURE)) {
-						String project2Name = project2.getName();
-						double sim = normaliseSimilarity(project1, project2);
-						int index1 = orderedProjects.lastIndexOf(project1Name);
-						int index2 = orderedProjects.lastIndexOf(project2Name);
-						scores[index1][index2] = sim;
-						if(hasSkeleton && isSkeleton && sim == 1.0) {
-							toIgnore.add(index2);
+					if (project.isNatureEnabled(JDT_NATURE)) {
+						String projectName = project.getName();
+						if(projectName.endsWith(SKELETON_PROJECT)) {
+							hasSkeleton = true;
 						}
-						min = Math.min(min, sim);
-						i+=1.0;
-						if(i/(total*total)*100 > notify) {
-							System.out.println(notify + "% complete");
-							notify = Math.max(notify+5, (int)Math.floor(i/(total*total)*100));
-						}
+						orderedProjects.add(projectName);
+						total++;
 					}
 				} catch (CoreException e) {
 					e.printStackTrace();
+					return;
 				}
 			}
+			
+			scores = new double [total][total];
+			double i = 0;
+			int notify = 5;
+			toIgnore = new HashSet<Integer>();
+			double[] skeletonNormalise = new double[total];
+			for (IProject project1 : projects) {
+				String project1Name = project1.getName();
+				boolean p1IsSkeleton = project1Name.endsWith(SKELETON_PROJECT);
+				for (IProject project2 : projects) {
+					try {
+						if (project1.isNatureEnabled(JDT_NATURE)
+								&& project2.isNatureEnabled(JDT_NATURE)) {
+							String project2Name = project2.getName();
+							double sim = normaliseSimilarity(project1, project2);
+							int index1 = orderedProjects.lastIndexOf(project1Name);
+							int index2 = orderedProjects.lastIndexOf(project2Name);
+							scores[index1][index2] = sim;
+							if(hasSkeleton && p1IsSkeleton) {
+								if(sim == 1.0) {
+									toIgnore.add(index2);
+								}
+								skeletonNormalise[index2] = sim;
+								System.out.println(sim);
+							} 
+							min = Math.min(min, sim);
+							i+=1.0;
+							if(i/(total*total)*100 > notify) {
+								System.out.println(notify + "% complete");
+								notify = Math.max(notify+5, (int)Math.floor(i/(total*total)*100));
+							}
+						}
+					} catch (CoreException e) {
+						e.printStackTrace();
+						return;
+					}
+				}
+			}
+			normaliseAllScores(skeletonNormalise);
+			recalculate = false;
 		}
 		print();
 	}
@@ -99,12 +114,13 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 		return notify;
 	}
 
-	private void normaliseAllScores() {
+	private void normaliseAllScores(double[] skeletonNormalise) {
 		double ePowMin = Math.pow(Math.E, min);
 		for(int i = 0; i < scores.length; i++) {
 			for(int j = 0; j < scores[i].length; j++) {
 				//scores[i][j] = 1.0-(Math.pow(Math.E, scores[i][j])-ePowMin)/(Math.E-ePowMin);
 				//scores[i][j] = (scores[i][j]-min)/(1-min);
+				//scores[i][j] = 1.0-(scores[i][j]-(skeletonNormalise[i]+skeletonNormalise[j])/2.0);
 				scores[i][j] = 1.0-scores[i][j];
 			}
 		}
