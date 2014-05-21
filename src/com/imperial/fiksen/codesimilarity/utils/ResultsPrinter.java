@@ -128,10 +128,24 @@ public class ResultsPrinter {
 			}
 		}
 	}
+	
+	public static void printOneUser(double[][] scores, List<String> orderedProjects, Set<Integer> toIgnore) {
+		String user = "java_recusion_ma8512";
+		int i = orderedProjects.indexOf(user);
+		//System.out.println(user);
+		for(int j = 0; j < orderedProjects.size(); j++) {
+			if(!toIgnore.contains(j)) {
+				System.out.print(orderedProjects.get(j) + "\t");
+				String score = String.format("%1$,.6f", 1-scores[i][j]);
+				System.out.println(score);
+			}
+		}
+		System.out.println(orderedProjects.size()-toIgnore.size());
+	}
 
 	public static void print(double[][] scores, List<String> orderedProjects,
 			Set<Integer> toIgnore) {
-		orangeDistanceTablePrint(scores, orderedProjects, toIgnore);
+		printOneUser(scores, orderedProjects, toIgnore);
 	}
 	
 }

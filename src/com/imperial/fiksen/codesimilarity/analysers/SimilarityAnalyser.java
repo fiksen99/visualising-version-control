@@ -9,6 +9,8 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 
+import com.imperial.fiksen.codesimilarity.utils.ResultsPrinter;
+
 public abstract class SimilarityAnalyser {
 	
 	public static final String RESULTS_SEPARATOR = "/";
@@ -34,16 +36,8 @@ public abstract class SimilarityAnalyser {
 		return parser.createAST(null);
 	}
 
-	public double[][] getScores() {
-		return scores;
-	}
-
-	public List<String> getOrderedProjects() {
-		return this.orderedProjects;
-	}
-	
-	public Set<Integer> getToIgnore() {
-		return toIgnore;
+	public void print() {
+		ResultsPrinter.print(scores, orderedProjects, toIgnore);
 	}
 
 }

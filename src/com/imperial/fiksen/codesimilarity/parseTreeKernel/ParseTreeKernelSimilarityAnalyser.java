@@ -88,8 +88,7 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 				}
 			}
 		}
-		normaliseAllScores();
-		com.imperial.fiksen.codesimilarity.utils.ResultsPrinter.print(scores, orderedProjects, toIgnore);
+		print();
 	}
 
 	private int updateProgress(double i, int notify) {
