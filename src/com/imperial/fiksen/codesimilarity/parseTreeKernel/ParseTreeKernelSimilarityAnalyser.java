@@ -164,23 +164,26 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 			IPackageFragment[] packages2) throws JavaModelException {
 		double k = 0;
 		for (IPackageFragment package1 : packages1) {
-			for (IPackageFragment package2 : packages2) {
-				if (package1.getKind() == IPackageFragmentRoot.K_SOURCE
-						&& package2.getKind() == IPackageFragmentRoot.K_SOURCE) {
-					for (ICompilationUnit unit1 : package1.getCompilationUnits()) {
-						for (ICompilationUnit unit2 : package2.getCompilationUnits()) {
-							if (unit1.getElementName().equals(unit2.getElementName()) && unit1.getElementName().equals("RecursionLibrary.java")) {
-								AllNodeVisitor visitor1 = new AllNodeVisitor();
-								AllNodeVisitor visitor2 = new AllNodeVisitor();
-								ASTNode parse = parse(unit1);
-								parse.accept(visitor1);
-								parse = parse(unit2);
-								parse.accept(visitor2);
-								k += calculateK(visitor1.getRoot(), visitor2.getRoot());
+			if (package1.getKind() == IPackageFragmentRoot.K_SOURCE) {
+				double maxSim = 0.0;
+				for (IPackageFragment package2 : packages2) {
+					if(package2.getKind() == IPackageFragmentRoot.K_SOURCE) {
+						for (ICompilationUnit unit1 : package1.getCompilationUnits()) {
+							for (ICompilationUnit unit2 : package2.getCompilationUnits()) {
+								if (unit1.getElementName().equals(unit2.getElementName()) && unit1.getElementName().equals("RecursionLibrary.java")) {
+									AllNodeVisitor visitor1 = new AllNodeVisitor();
+									AllNodeVisitor visitor2 = new AllNodeVisitor();
+									ASTNode parse = parse(unit1);
+									parse.accept(visitor1);
+									parse = parse(unit2);
+									parse.accept(visitor2);
+									maxSim = Math.max(maxSim, calculateK(visitor1.getRoot(), visitor2.getRoot()));
+								}
 							}
 						}
 					}
 				}
+				k += maxSim;
 			}
 		}
 		return k;
