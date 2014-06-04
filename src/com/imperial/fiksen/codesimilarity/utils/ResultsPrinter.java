@@ -1,5 +1,6 @@
 package com.imperial.fiksen.codesimilarity.utils;
 
+import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -7,7 +8,7 @@ import java.util.Set;
 
 public class ResultsPrinter {
 	
-	private static final int MAX_LENGTH = 20;
+	private static final int MAX_LENGTH = 35;
 	
 	public static void printScore(double[][] scores, List<String> orderedProjects) {
 		if(scores == null || 
@@ -29,12 +30,12 @@ public class ResultsPrinter {
 			System.out.print(name);
 			fillWhiteSpace(name.length());
 			for(int j = 0; j < scores[i].length; j++) {
-				String score = String.format("%1$,.3f", scores[i][j]);
+				String score = formatScoreString(scores[i][j]);
 				if(score.length() < MAX_LENGTH) {
 					System.out.print(score);
 					fillWhiteSpace(score.length());
 				} else {
-					System.out.print(score.substring(0, MAX_LENGTH));
+					System.out.print(score.substring(0, MAX_LENGTH-3) + "...");
 					System.out.print("|");
 				}
 			}
@@ -94,20 +95,21 @@ public class ResultsPrinter {
 		System.out.println("]");
 	}
 	
-	public static void orangeDistanceTablePrint(double[][] scores, List<String> orderedProjects, Set<Integer> toIgnore) {
-		System.out.println(scores.length-toIgnore.size() + " labeled");
+	public static void orangeDistanceTablePrint(double[][] scores, List<String> orderedProjects, Set<Integer> toIgnore, PrintStream printStream) {
+		toIgnore.size();
+		printStream.println(scores.length-toIgnore.size() + " labeled");
 		for(int i = 0; i < scores.length; i++) {
 			if(!toIgnore.contains(i)) {
-				System.out.print(orderedProjects.get(i) + "\t");
+				printStream.print(orderedProjects.get(i) + "\t");
 				for(int j = 0; j <= i; j++) {
 					if(!toIgnore.contains(j)) {
-						String score = String.format("%1$,.6f", scores[i][j]);
-						System.out.print(score);
+						String score = formatScoreString(scores[i][j]);
+						printStream.print(score);
 						if(i!=j)
-							System.out.print("\t");
+							printStream.print("\t");
 					}
 				}
-				System.out.println();
+				printStream.println();
 			}
 		}
 	}
@@ -118,7 +120,7 @@ public class ResultsPrinter {
 				System.out.print("\t");
 				for(int j = 0; j < scores[i].length; j++) {
 					if(!toIgnore.contains(j)) {
-						String score = String.format("%1$,.6f", scores[i][j]);
+						String score = formatScoreString(scores[i][j]);
 						System.out.print(score);
 						if(j!=scores[i].length-1)
 							System.out.print("\t");
@@ -136,16 +138,22 @@ public class ResultsPrinter {
 		for(int j = 0; j < orderedProjects.size(); j++) {
 			if(!toIgnore.contains(j)) {
 				System.out.print(orderedProjects.get(j) + "\t");
-				String score = String.format("%1$,.6f", 1-scores[i][j]);
+				String score = formatScoreString(1-scores[i][j]);
 				System.out.println(score);
 			}
 		}
 		System.out.println(orderedProjects.size()-toIgnore.size());
 	}
 
+	private static String formatScoreString(double d) {
+		if(d<0) d=1.0;
+		return String.format("%1$,.6f", d);
+		
+	}
+
 	public static void print(double[][] scores, List<String> orderedProjects,
-			Set<Integer> toIgnore) {
-		printOneUser(scores, orderedProjects, toIgnore);
+			Set<Integer> toIgnore, PrintStream printStream) {
+		orangeDistanceTablePrint(scores, orderedProjects, toIgnore, printStream);
 	}
 	
 }
