@@ -15,7 +15,7 @@
       </command>
       <command
             id="com.imperial.fiksen.code-similarity.commands.compareSelected"
-            name="Compare Selected">
+            name="Compare Selected Files">
       </command>
    </extension>
    <extension
@@ -25,7 +25,7 @@
             commandId="com.imperial.fiksen.code-similarity.commands.astInfo">
       </handler>
       <handler
-            class="com.imperial.fiksen.codesimilarity.handlers.CompareSelected"
+            class="com.imperial.fiksen.codesimilarity.handlers.CompareDiffViewHandler"
             commandId="com.imperial.fiksen.code-similarity.commands.compareSelected">
       </handler>
    </extension>
@@ -49,6 +49,11 @@
             <command
                   commandId="com.imperial.fiksen.code-similarity.commands.astInfo"
                   id="com.imperial.fiksen.code-similarity.menus.astInfo"
+                  mnemonic="A">
+            </command>
+            <command
+                  commandId="com.imperial.fiksen.code-similarity.commands.compareSelected"
+                  id="com.imperial.fiksen.code-similarity.menus.compareSelected"
                   mnemonic="A">
             </command>
          </menu>
