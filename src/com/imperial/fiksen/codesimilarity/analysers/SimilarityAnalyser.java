@@ -1,5 +1,6 @@
 package com.imperial.fiksen.codesimilarity.analysers;
 
+import java.io.PrintStream;
 import java.util.List;
 import java.util.Set;
 
@@ -20,7 +21,8 @@ public abstract class SimilarityAnalyser {
 	protected double[][] scores;
 	
 	protected static final String SKELETON_PROJECT = "skeleton_";
-	
+
+	protected static final int NUM_THREADS = 8;
 
 	protected List<String> orderedProjects;
 	
@@ -36,8 +38,8 @@ public abstract class SimilarityAnalyser {
 		return parser.createAST(null);
 	}
 
-	public void print() {
-		ResultsPrinter.print(scores, orderedProjects, toIgnore);
+	public void print(PrintStream printStream) {
+		ResultsPrinter.print(scores, orderedProjects, toIgnore, printStream);
 	}
 
 }
