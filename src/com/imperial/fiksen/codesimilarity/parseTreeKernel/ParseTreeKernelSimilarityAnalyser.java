@@ -208,6 +208,12 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 			double prod = DECAY_FACTOR;
 			List<ASTNodeWithChildren> children1 = node1.getChildren();
 			List<ASTNodeWithChildren> children2 = node2.getChildren();
+			//needed? ensures reflexive
+			if(children1.size() > children2.size()) {
+				List<ASTNodeWithChildren> temp = children1;
+				children1 = children2;
+				children2 = temp;
+			}
 			if(depth < THRESHOLD_DEPTH) {
 				for(int i = 0; i < children1.size(); i++) {
 					double max = 0;
