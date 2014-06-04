@@ -82,65 +82,6 @@ public class SimilarityCompareEditorInput extends SaveableCompareEditorInput {
 		this.right = right;
 	}
 
-	/**
-	 * Creates a new CompareFileRevisionEditorInput.
-	 * 
-	 * @param left
-	 * @param right
-	 * @param ancestor
-	 * @param page
-	 */
-	public SimilarityCompareEditorInput(ITypedElement left, ITypedElement right,
-			ITypedElement ancestor, IWorkbenchPage page) {
-		super(new CompareConfiguration(), page);
-		this.left = left;
-		this.right = right;
-	}
-
-	FileRevisionTypedElement getRightRevision() {
-		if (right instanceof FileRevisionTypedElement) {
-			return (FileRevisionTypedElement) right;
-		}
-		return null;
-	}
-
-	FileRevisionTypedElement getLeftRevision() {
-		if (left instanceof FileRevisionTypedElement) {
-			return (FileRevisionTypedElement) left;
-		}
-		return null;
-	}
-
-	FileRevisionTypedElement getAncestorRevision() {
-		return null;
-	}
-
-	private static void ensureContentsCached(FileRevisionTypedElement left,
-			FileRevisionTypedElement right, FileRevisionTypedElement ancestor,
-			IProgressMonitor monitor) {
-		if (left != null) {
-			try {
-				left.cacheContents(monitor);
-			} catch (CoreException e) {
-				// Activator.logError(e.getMessage(), e);
-			}
-		}
-		if (right != null) {
-			try {
-				right.cacheContents(monitor);
-			} catch (CoreException e) {
-				// Activator.logError(e.getMessage(), e);
-			}
-		}
-		if (ancestor != null) {
-			try {
-				ancestor.cacheContents(monitor);
-			} catch (CoreException e) {
-				// Activator.logError(e.getMessage(), e);
-			}
-		}
-	}
-
 	private boolean isLeftEditable(ICompareInput input) {
 		return false;
 	}
@@ -168,7 +109,7 @@ public class SimilarityCompareEditorInput extends SaveableCompareEditorInput {
 		return compare(left, right);
 	}
 
-	// TODO: THE BIG ONE!!!!
+	// TODO: THE BIG ONE!!!! ...no its not
 	private DiffNode compare(ITypedElement actLeft, ITypedElement actRight) {
 		if (actLeft.getType().equals(ITypedElement.FOLDER_TYPE)) {
 			// return new MyDiffContainer(null, left,right);
@@ -298,7 +239,8 @@ public class SimilarityCompareEditorInput extends SaveableCompareEditorInput {
 	// TODO: labels
 	private void initLabels(ICompareInput input) {
 		CompareConfiguration cc = getCompareConfiguration();
-		if (getLeftRevision() != null) {
+			cc.setLeftLabel(left.getName());
+			cc.setRightLabel(right.getName());
 			// String leftLabel = getFileRevisionLabel(getLeftRevision());
 			// cc.setLeftLabel(leftLabel);
 			// } else if (getResource() != null) {
@@ -319,7 +261,6 @@ public class SimilarityCompareEditorInput extends SaveableCompareEditorInput {
 			// String ancestorLabel =
 			// getFileRevisionLabel(getAncestorRevision());
 			// cc.setAncestorLabel(ancestorLabel);
-		}
 
 	}
 
@@ -339,7 +280,7 @@ public class SimilarityCompareEditorInput extends SaveableCompareEditorInput {
 		// return
 		// NLS.bind(UIText.GitCompareFileRevisionEditorInput_CompareTooltip,
 		// titleObject);
-		return "TODO_tooltip!!";
+		return "Comparison of " + left.getName() + " and " + right.getName();
 	}
 
 	/*
@@ -357,7 +298,7 @@ public class SimilarityCompareEditorInput extends SaveableCompareEditorInput {
 		// return
 		// NLS.bind(UIText.GitCompareFileRevisionEditorInput_CompareTooltip,
 		// titleObject);
-		return "TODO_title";
+		return "Comparison of " + left.getName() + " and " + right.getName();
 	}
 
 	/*
