@@ -1,11 +1,15 @@
 package com.imperial.fiksen.codesimilarity.parseTreeKernel;
 
+import java.io.FileNotFoundException;
+import java.io.PrintStream;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.*;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -29,92 +33,146 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 	
 	private int total;
 	
+	public int notify;
+	
 	private double min = 1.0;
 	boolean recalculate;
 	
 	private Set<String> filesToIgnore;
+	private boolean hasSkeleton;
+	protected int completed;
 	
 	public ParseTreeKernelSimilarityAnalyser() {
-		total = 0;
-		pairedScores = new HashMap<String, Double>();
 		recalculate = true;
-		filesToIgnore = new HashSet<String>();
+	}
+	
+	public void executeComparison(IProject[] projects) {
+        ExecutorService executor = Executors.newFixedThreadPool(NUM_THREADS);
+        Future<?>[] toComplete = new Future<?>[NUM_THREADS];
+        for(int i = 0; i < NUM_THREADS; i++) {
+        	toComplete[i] = executor.submit(new Compute(i, projects.clone(), scores));
+        }
+        for(int i = 0; i < NUM_THREADS; i++) {
+        	try {
+				toComplete[i].get();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ExecutionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        }
+        executor.shutdown();
 	}
 
 	@Override
 	public void analyse(IProject[] projects) {
+		recalculate = true;
 		if(recalculate) {
-			boolean hasSkeleton = false;
-			orderedProjects = new LinkedList<String>();
-			for (int i = 0 ; i < projects.length ; i++) {
-				IProject project = projects[i];
-				try {
-					if (project.isNatureEnabled(JDT_NATURE)) {
-						String projectName = project.getName();
-						if(projectName.endsWith(SKELETON_PROJECT)) {
-							hasSkeleton = true;
-						}
-						orderedProjects.add(projectName);
-						total++;
-					}
-				} catch (CoreException e) {
-					e.printStackTrace();
-					return;
-				}
-			}
-			
-			scores = new double [total][total];
-			double i = 0;
-			int notify = 5;
-			toIgnore = new HashSet<Integer>();
-			double[] skeletonNormalise = new double[total];
-			for (IProject project1 : projects) {
-				String project1Name = project1.getName();
-				boolean p1IsSkeleton = project1Name.endsWith(SKELETON_PROJECT);
-				for (IProject project2 : projects) {
-					try {
-						if (project1.isNatureEnabled(JDT_NATURE)
-								&& project2.isNatureEnabled(JDT_NATURE)) {
-							String project2Name = project2.getName();
-							double sim = normaliseSimilarity(project1, project2);
-							int index1 = orderedProjects.lastIndexOf(project1Name);
-							int index2 = orderedProjects.lastIndexOf(project2Name);
-							scores[index1][index2] = sim;
-							if(hasSkeleton && p1IsSkeleton) {
-								if(sim == 1.0) {
-									toIgnore.add(index2);
-								}
-								skeletonNormalise[index2] = sim;
-								System.out.println(sim);
-							} 
-							min = Math.min(min, sim);
-							i+=1.0;
-							if(i/(total*total)*100 > notify) {
-								System.out.println(notify + "% complete");
-								notify = Math.max(notify+5, (int)Math.floor(i/(total*total)*100));
-							}
-						}
-					} catch (CoreException e) {
-						e.printStackTrace();
-						return;
-					}
-				}
-			}
-			normaliseAllScores(skeletonNormalise);
-			recalculate = false;
+			setUp(projects);
+			executeComparison(projects);
+			normaliseAllScores();
+			System.out.println("100% complete!");
 		}
-		print();
+		try {
+			print(new PrintStream("/Users/adam/Programming/visualising-version-control/resources/clustering/nonReflex.tab"));
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
-	private int updateProgress(double i, int notify) {
-		if(i/(total*total)*100 > notify) {
-			System.out.println(notify + "% complete");
-			return Math.max(notify+5, (int)Math.floor(i/(total*total)*100));
-		}		
-		return notify;
+	private class Compute implements Runnable {
+		
+		private double[][] scores;
+		private IProject[] projects;
+		private int threadNum;
+
+		public Compute(int fraction, IProject[] projects, double[][] scores) {
+			this.threadNum = fraction+1;
+			this.scores = scores;
+			this.projects = projects;
+		}
+
+		public void run() {
+			System.out.println("running task " + threadNum);
+			computeScores();
+			System.out.println("thread " + threadNum + " complete");
+		}
+		
+		private void computeScores() {
+			double[] skeletonNormalise = new double[total];
+			int projectNum = 0;
+			for (IProject project1 : projects) {
+				if(projectNum % NUM_THREADS == this.threadNum-1)  {
+					String project1Name = project1.getName();
+					boolean p1IsSkeleton = project1Name.endsWith(SKELETON_PROJECT);
+					for (IProject project2 : projects) {
+						try {
+							if (project1.isNatureEnabled(JDT_NATURE)
+									&& project2.isNatureEnabled(JDT_NATURE)) {
+								String project2Name = project2.getName();
+								double sim = normaliseSimilarity(project1, project2);
+								int index1 = orderedProjects.lastIndexOf(project1Name);
+								int index2 = orderedProjects.lastIndexOf(project2Name);
+								synchronized(scores) {
+									scores[index1][index2] = sim;
+								}
+								if(hasSkeleton && p1IsSkeleton) {
+									if(sim == 1.0) {
+										toIgnore.add(index2);
+									}
+									skeletonNormalise[index2] = sim;
+								} 
+								synchronized(filesToIgnore) {
+								++completed;
+								}
+								if((completed)%(4*NUM_THREADS) == 0) {
+									System.out.println((completed*100)/(total*total) + "% complete");
+								}
+							}
+						} catch (CoreException e) {
+							e.printStackTrace();
+							return;
+						}
+					}
+				}
+				projectNum++;
+			}
+		}
+		
 	}
 
-	private void normaliseAllScores(double[] skeletonNormalise) {
+	private void setUp(IProject[] projects) {
+		total = 0;
+		pairedScores = new ConcurrentHashMap<String, Double>();
+		filesToIgnore = new HashSet<String>();
+		hasSkeleton = false;
+		orderedProjects = new LinkedList<String>();
+		completed = 0;
+		for (int i = 0 ; i < projects.length ; i++) {
+			IProject project = projects[i];
+			try {
+				if (project.isNatureEnabled(JDT_NATURE)) {
+					String projectName = project.getName();
+					if(projectName.endsWith(SKELETON_PROJECT)) {
+						hasSkeleton = true;
+					}
+					orderedProjects.add(projectName);
+					total++;
+				}
+			} catch (CoreException e) {
+				e.printStackTrace();
+				return;
+			}
+		}
+		toIgnore = Collections.synchronizedSet(new HashSet<Integer>());		
+		scores = new double [total][total];
+		
+	}
+
+	private void normaliseAllScores() {
 		double ePowMin = Math.pow(Math.E, min);
 		for(int i = 0; i < scores.length; i++) {
 			for(int j = 0; j < scores[i].length; j++) {
