@@ -85,6 +85,6 @@
 # java
 .classpath
 /bin
-
+/resources
 
 /target/
