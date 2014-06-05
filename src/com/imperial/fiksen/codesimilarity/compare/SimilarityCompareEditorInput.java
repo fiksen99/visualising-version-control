@@ -19,6 +19,7 @@ import org.eclipse.compare.ICompareContainer;
 import org.eclipse.compare.IEditableContent;
 import org.eclipse.compare.IResourceProvider;
 import org.eclipse.compare.ITypedElement;
+import org.eclipse.compare.structuremergeviewer.DiffContainer;
 import org.eclipse.compare.structuremergeviewer.DiffNode;
 import org.eclipse.compare.structuremergeviewer.Differencer;
 import org.eclipse.compare.structuremergeviewer.ICompareInput;
@@ -311,37 +312,6 @@ public class SimilarityCompareEditorInput extends SaveableCompareEditorInput {
 			return getResource();
 		}
 		return super.getAdapter(adapter);
-	}
-
-	private String getShortName(ITypedElement element) {
-		if (element instanceof FileRevisionTypedElement) {
-			FileRevisionTypedElement fileRevisionElement = (FileRevisionTypedElement) element;
-			return fileRevisionElement.getName();
-		} else if (element instanceof LocalResourceTypedElement) {
-			LocalResourceTypedElement typedContent = (LocalResourceTypedElement) element;
-			return typedContent.getResource().getName();
-		}
-		return element.getName();
-	}
-
-	private String getLongName(ITypedElement element) {
-		if (element instanceof FileRevisionTypedElement) {
-			FileRevisionTypedElement fileRevisionElement = (FileRevisionTypedElement) element;
-			return fileRevisionElement.getPath();
-		} else if (element instanceof LocalResourceTypedElement) {
-			LocalResourceTypedElement typedContent = (LocalResourceTypedElement) element;
-			return typedContent.getResource().getFullPath().toString();
-		}
-		return element.getName();
-	}
-
-	private String getContentIdentifier(ITypedElement element) {
-		if (element.equals(left)) {
-			return left.getName();
-		} else if (element.equals(right)) {
-			return right.getName();
-		}
-		return "TODO_content_identifier";
 	}
 
 	@Override
