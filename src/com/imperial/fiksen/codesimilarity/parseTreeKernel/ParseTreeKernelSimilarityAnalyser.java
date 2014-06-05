@@ -43,6 +43,7 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 	protected int completed;
 	
 	public ParseTreeKernelSimilarityAnalyser() {
+		super();
 		recalculate = true;
 	}
 	
@@ -81,6 +82,7 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		super.analyse(projects);
 	}
 
 	private class Compute implements Runnable {

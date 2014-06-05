@@ -1,5 +1,6 @@
 package com.imperial.fiksen.codesimilarity.analysers;
 
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.List;
 import java.util.Set;
@@ -28,9 +29,14 @@ public abstract class SimilarityAnalyser {
 	
 	protected Set<Integer> toIgnore;
 	
-	public abstract void analyse(IProject[] projects);
+	protected static Process orange;
+	
 	protected static final String PATH_TO_RESOURCES = "/Users/adam/Programming/visualising-version-control/resources/clustering/";
 	protected static final String SAVE_FILE = "nonReflex.tab";
+	
+	public SimilarityAnalyser() {
+		orange = null;
+	}
 
 	protected ASTNode parse(ICompilationUnit unit) {
 		ASTParser parser = ASTParser.newParser(AST.JLS4);
@@ -42,6 +48,16 @@ public abstract class SimilarityAnalyser {
 
 	public void print(PrintStream printStream) {
 		ResultsPrinter.print(scores, orderedProjects, toIgnore, printStream);
+	}
+	
+	public void analyse(IProject[] projects) {
+		if( orange == null ) {
+			try {
+				orange = Runtime.getRuntime().exec("open /Applications/Orange.app/");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 }
