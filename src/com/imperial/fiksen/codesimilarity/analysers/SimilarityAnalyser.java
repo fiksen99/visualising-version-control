@@ -29,6 +29,8 @@ public abstract class SimilarityAnalyser {
 	protected Set<Integer> toIgnore;
 	
 	public abstract void analyse(IProject[] projects);
+	protected static final String PATH_TO_RESOURCES = "/Users/adam/Programming/visualising-version-control/resources/clustering/";
+	protected static final String SAVE_FILE = "nonReflex.tab";
 
 	protected ASTNode parse(ICompilationUnit unit) {
 		ASTParser parser = ASTParser.newParser(AST.JLS4);

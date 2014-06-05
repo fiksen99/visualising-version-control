@@ -76,7 +76,7 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 			System.out.println("100% complete!");
 		}
 		try {
-			print(new PrintStream("/Users/adam/Programming/visualising-version-control/resources/clustering/nonReflex.tab"));
+			print(new PrintStream(PATH_TO_RESOURCES + SAVE_FILE));
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
