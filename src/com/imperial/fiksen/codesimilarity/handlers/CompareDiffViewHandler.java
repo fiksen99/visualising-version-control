@@ -42,12 +42,11 @@ public class CompareDiffViewHandler extends AbstractHandler {
           int selectedFiles = 0;
           while(iterator.hasNext()) {
             Object element = iterator.next();
-            //if the selected item is part of a java project
+            //if the selected item is a java file
             if(element instanceof ICompilationUnit) {
             	
             	ICompilationUnit i = (ICompilationUnit) element;
             	IFile file = (IFile) i.getResource();
-            	//i.get
             	if( left == null ) {
             		left = file;
             	} else {
@@ -57,7 +56,7 @@ public class CompareDiffViewHandler extends AbstractHandler {
             }
           }
           if(selectedFiles != NUM_COMPARABLE_FILES ) {
-        	  throw new ExecutionException("Must only select " + NUM_COMPARABLE_FILES + " files");
+        	  throw new ExecutionException("Must select exactly " + NUM_COMPARABLE_FILES + " java files");
           }
         }		
 
