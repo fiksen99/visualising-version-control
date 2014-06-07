@@ -110,7 +110,7 @@ public class SimilarityCompareEditorInput extends SaveableCompareEditorInput {
 		return compare(left, right);
 	}
 
-	// TODO: THE BIG ONE!!!! ...no its not
+	// TODO: THE BIG ONE!!!! 
 	private DiffNode compare(ITypedElement actLeft, ITypedElement actRight) {
 		if (actLeft.getType().equals(ITypedElement.FOLDER_TYPE)) {
 			// return new MyDiffContainer(null, left,right);
@@ -240,7 +240,7 @@ public class SimilarityCompareEditorInput extends SaveableCompareEditorInput {
 	// TODO: labels
 	private void initLabels(ICompareInput input) {
 		CompareConfiguration cc = getCompareConfiguration();
-			cc.setLeftLabel(left.getName());
+			cc.setLeftLabel("THIS IS THE LABEL");
 			cc.setRightLabel(right.getName());
 			// String leftLabel = getFileRevisionLabel(getLeftRevision());
 			// cc.setLeftLabel(leftLabel);

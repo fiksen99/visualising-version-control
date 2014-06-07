@@ -9,6 +9,7 @@ import org.eclipse.compare.CompareConfiguration;
 import org.eclipse.compare.CompareEditorInput;
 import org.eclipse.compare.CompareUI;
 import org.eclipse.compare.ITypedElement;
+import org.eclipse.compare.ResourceNode;
 import org.eclipse.compare.structuremergeviewer.ICompareInput;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -62,6 +63,9 @@ public class CompareDiffViewHandler extends AbstractHandler {
 
 		ITypedElement leftTypedElem = SaveableCompareEditorInput.createFileElement(left);
 		ITypedElement rightTypedElem = SaveableCompareEditorInput.createFileElement(right);
+
+		ResourceNode leftResourceNode = new ResourceNode(left);
+		ResourceNode rightResourceNode = new ResourceNode(right); 
 		
 		CompareEditorInput in = new SimilarityCompareEditorInput(leftTypedElem, rightTypedElem, page);
 		CompareUI.openCompareEditor(in);

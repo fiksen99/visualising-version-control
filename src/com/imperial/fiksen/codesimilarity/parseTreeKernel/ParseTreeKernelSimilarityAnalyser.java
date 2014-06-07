@@ -115,7 +115,7 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 							if (project1.isNatureEnabled(JDT_NATURE)
 									&& project2.isNatureEnabled(JDT_NATURE)) {
 								String project2Name = project2.getName();
-								double sim = normaliseSimilarity(project1, project2);
+								double sim = calculateNormalised(project1, project2);
 								int index1 = orderedProjects.lastIndexOf(project1Name);
 								int index2 = orderedProjects.lastIndexOf(project2Name);
 								synchronized(scores) {
@@ -186,11 +186,15 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 		}
 	}
 
-	private double normaliseSimilarity(IProject project1, IProject project2) throws JavaModelException {
+	private double calculateNormalised(IProject project1, IProject project2) throws JavaModelException {
 		double k = getScore(project1, project2);
 		double p1Score = getScore(project1);
 		double p2Score = getScore(project2);
-		return k/Math.sqrt(p1Score*p2Score);
+		return normaliseSimilarity(k, p1Score, p2Score);
+	}
+
+	public static double normaliseSimilarity(double comp, double selfComp1, double selfComp2){
+		return comp/Math.sqrt(selfComp1*selfComp2);
 	}
 	
 	private double getScore(IProject project) throws JavaModelException {
@@ -254,7 +258,7 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 		
 	}
 
-	private double calculateK(ASTNodeWithChildren root1, ASTNodeWithChildren root2) {
+	public static double calculateK(ASTNodeWithChildren root1, ASTNodeWithChildren root2) {
 		double k = 0;
 		for(ASTNodeWithChildren node1 : root1) {
 			for(ASTNodeWithChildren node2 : root2) {
@@ -264,7 +268,7 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 		return k;
 	}
 
-	private double c(ASTNodeWithChildren node1, ASTNodeWithChildren node2, int depth) {
+	private static double c(ASTNodeWithChildren node1, ASTNodeWithChildren node2, int depth) {
 		if(!node1.getNode().getClass().equals(node2.getNode().getClass())) {
 			//n1 and n2 are different
 			return 0;
