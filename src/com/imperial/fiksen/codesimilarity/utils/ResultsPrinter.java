@@ -96,13 +96,13 @@ public class ResultsPrinter {
 	}
 	
 	public static void orangeDistanceTablePrint(double[][] scores, List<String> orderedProjects, Set<Integer> toIgnore, PrintStream printStream) {
-		toIgnore.size();
-		printStream.println(scores.length-toIgnore.size() + " labeled");
+		boolean noSkeleton = toIgnore == null;
+		printStream.println(scores.length - (noSkeleton ? 0 : toIgnore.size()) + " labeled");
 		for(int i = 0; i < scores.length; i++) {
-			if(!toIgnore.contains(i)) {
+			if(noSkeleton || !toIgnore.contains(i)) {
 				printStream.print(orderedProjects.get(i) + "\t");
 				for(int j = 0; j <= i; j++) {
-					if(!toIgnore.contains(j)) {
+					if(noSkeleton || !toIgnore.contains(j)) {
 						String score = formatScoreString(scores[i][j]);
 						printStream.print(score);
 						if(i!=j)

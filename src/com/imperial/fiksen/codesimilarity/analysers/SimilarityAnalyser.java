@@ -11,6 +11,7 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 
+import com.imperial.fiksen.codesimilarity.utils.OrangeUtils;
 import com.imperial.fiksen.codesimilarity.utils.ResultsPrinter;
 
 public abstract class SimilarityAnalyser {
@@ -31,9 +32,6 @@ public abstract class SimilarityAnalyser {
 	
 	protected static Process orange;
 	
-	protected static final String PATH_TO_RESOURCES = "/Users/adam/Programming/visualising-version-control/resources/clustering/";
-	protected static final String SAVE_FILE = "nonReflex.tab";
-	
 	public SimilarityAnalyser() {
 		orange = null;
 	}
@@ -51,13 +49,7 @@ public abstract class SimilarityAnalyser {
 	}
 	
 	public void analyse(IProject[] projects) {
-		if( orange == null ) {
-			try {
-				orange = Runtime.getRuntime().exec("open /Applications/Orange.app/");
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
+		OrangeUtils.createProcess();
 	}
 
 }
