@@ -23,6 +23,7 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import com.imperial.fiksen.codesimilarity.analysers.SimilarityAnalyser;
 import com.imperial.fiksen.codesimilarity.treemanipulation.ASTNodeWithChildren;
 import com.imperial.fiksen.codesimilarity.treemanipulation.AllNodeVisitor;
+import com.imperial.fiksen.codesimilarity.utils.OrangeUtils;
 
 public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 	
@@ -46,6 +47,53 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 		super();
 		recalculate = true;
 	}
+
+	@Override
+	public void analyse(IProject[] projects) {
+		recalculate = true;
+		if(recalculate) {
+			setUp(projects);
+			executeComparison(projects);
+			normaliseAllScores();
+			System.out.println("100% complete!");
+		}
+		try {
+			print(new PrintStream(OrangeUtils.PATH_TO_RESOURCES + OrangeUtils.SAVE_FILE));
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		super.analyse(projects);
+	}
+
+	private void setUp(IProject[] projects) {
+		total = 0;
+		pairedScores = new ConcurrentHashMap<String, Double>();
+		filesToIgnore = new HashSet<String>();
+		hasSkeleton = false;
+		toIgnore = null;
+		orderedProjects = new LinkedList<String>();
+		completed = 0;
+		for (int i = 0 ; i < projects.length ; i++) {
+			IProject project = projects[i];
+			try {
+				if (project.isNatureEnabled(JDT_NATURE)) {
+					String projectName = project.getName();
+					if(projectName.endsWith(SKELETON_PROJECT)) {
+						hasSkeleton = true;
+						toIgnore = Collections.synchronizedSet(new HashSet<Integer>());	
+					}
+					orderedProjects.add(projectName);
+					total++;
+				}
+			} catch (CoreException e) {
+				e.printStackTrace();
+				return;
+			}
+		}	
+		scores = new double [total][total];
+		
+	}
 	
 	public void executeComparison(IProject[] projects) {
         ExecutorService executor = Executors.newFixedThreadPool(NUM_THREADS);
@@ -65,24 +113,6 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 			}
         }
         executor.shutdown();
-	}
-
-	@Override
-	public void analyse(IProject[] projects) {
-		recalculate = true;
-		if(recalculate) {
-			setUp(projects);
-			executeComparison(projects);
-			normaliseAllScores();
-			System.out.println("100% complete!");
-		}
-		try {
-			print(new PrintStream(PATH_TO_RESOURCES + SAVE_FILE));
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		super.analyse(projects);
 	}
 
 	private class Compute implements Runnable {
@@ -143,34 +173,6 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 				projectNum++;
 			}
 		}
-		
-	}
-
-	private void setUp(IProject[] projects) {
-		total = 0;
-		pairedScores = new ConcurrentHashMap<String, Double>();
-		filesToIgnore = new HashSet<String>();
-		hasSkeleton = false;
-		orderedProjects = new LinkedList<String>();
-		completed = 0;
-		for (int i = 0 ; i < projects.length ; i++) {
-			IProject project = projects[i];
-			try {
-				if (project.isNatureEnabled(JDT_NATURE)) {
-					String projectName = project.getName();
-					if(projectName.endsWith(SKELETON_PROJECT)) {
-						hasSkeleton = true;
-					}
-					orderedProjects.add(projectName);
-					total++;
-				}
-			} catch (CoreException e) {
-				e.printStackTrace();
-				return;
-			}
-		}
-		toIgnore = Collections.synchronizedSet(new HashSet<Integer>());		
-		scores = new double [total][total];
 		
 	}
 
@@ -235,10 +237,10 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 						for (ICompilationUnit unit1 : package1.getCompilationUnits()) {
 							for (ICompilationUnit unit2 : package2.getCompilationUnits()) {
 //								if(!unit1.getElementName().equals("IOUtil.java") && !unit2.getElementName().equals("IOUtil.java")) {
-								if ((unit1.getElementName().equals("RecursionLibrary.java")
-										||  unit1.getElementName().equals("LoopArraysLibrary.java"))
-										&&(unit2.getElementName().equals("RecursionLibrary.java")
-												||  unit2.getElementName().equals("LoopArraysLibrary.java"))) {
+//								if ((unit1.getElementName().equals("RecursionLibrary.java")
+//										||  unit1.getElementName().equals("LoopArraysLibrary.java"))
+//										&&(unit2.getElementName().equals("RecursionLibrary.java")
+//												||  unit2.getElementName().equals("LoopArraysLibrary.java"))) {
 									AllNodeVisitor visitor1 = new AllNodeVisitor();
 									AllNodeVisitor visitor2 = new AllNodeVisitor();
 									ASTNode parse = parse(unit1);
@@ -246,7 +248,7 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 									parse = parse(unit2);
 									parse.accept(visitor2);
 									maxSim = Math.max(maxSim, calculateK(visitor1.getRoot(), visitor2.getRoot()));
-								}
+//								}
 							}
 						}
 					}
