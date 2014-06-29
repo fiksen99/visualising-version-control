@@ -8,9 +8,11 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.concurrent.*;
 
+import org.eclipse.compare.rangedifferencer.RangeDifference;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -18,7 +20,11 @@ import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jface.text.IDocument;
 
 import com.imperial.fiksen.codesimilarity.analysers.SimilarityAnalyser;
 import com.imperial.fiksen.codesimilarity.treemanipulation.ASTNodeWithChildren;
@@ -260,11 +266,12 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 		
 	}
 
-	public static double calculateK(ASTNodeWithChildren root1, ASTNodeWithChildren root2) {
+	public static double calculateK(final ASTNodeWithChildren root1, ASTNodeWithChildren root2) {
 		double k = 0;
 		for(ASTNodeWithChildren node1 : root1) {
 			for(ASTNodeWithChildren node2 : root2) {
-				k += c(node1, node2, 1);
+				double cVal = c(node1, node2, 1); 
+				k += cVal;
 			}
 		}
 		return k;
@@ -279,7 +286,8 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 			List<ASTNodeWithChildren> children1 = node1.getChildren();
 			List<ASTNodeWithChildren> children2 = node2.getChildren();
 			//needed? ensures reflexive
-			if(children1.size() > children2.size()) {
+			if(children1.size() > children2.size()
+					|| (children1.size() == children2.size() && isHigherPriority(children1, children2))) {
 				List<ASTNodeWithChildren> temp = children1;
 				children1 = children2;
 				children2 = temp;
@@ -298,4 +306,115 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 		}
 	}
 
+	private static boolean isHigherPriority(
+			List<ASTNodeWithChildren> first,
+			List<ASTNodeWithChildren> second) {
+		PriorityQueue<Integer> q1 = new PriorityQueue<Integer>();
+		PriorityQueue<Integer> q2 = new PriorityQueue<Integer>();
+		for(ASTNodeWithChildren child:first) {
+			q1.add(child.getNode().getNodeType());
+		}
+		for(ASTNodeWithChildren child:second) {
+			q2.add(child.getNode().getNodeType());
+		}
+		Integer node1Type;
+		while((node1Type = q1.poll()) != null) {
+			Integer node2Type = q2.poll();
+			if(node1Type < node2Type) {
+				return true;
+			} else if(node2Type < node1Type) {
+				return false;
+			}
+		}
+		//they have the same children so doesn't matter
+		return true;
+	}
+
+	public RangeDifference[] compare(IDocument leftDoc, IDocument rightDoc) {
+		ASTParser parser = ASTParser.newParser(AST.JLS4);
+		parser.setKind(ASTParser.K_COMPILATION_UNIT);
+		parser.setSource(leftDoc.get().toCharArray());
+		CompilationUnit leftUnit = (CompilationUnit) parser.createAST(null);
+		AllNodeVisitor visitor1 = new AllNodeVisitor();
+		leftUnit.accept(visitor1);
+		parser.setSource(rightDoc.get().toCharArray());
+		CompilationUnit rightUnit = (CompilationUnit) parser.createAST(null);
+		AllNodeVisitor visitor2 = new AllNodeVisitor();
+		rightUnit.accept(visitor2);
+		return detailedCalculateK(visitor1.getRoot(), visitor2.getRoot(), leftUnit, rightUnit);
+	}
+
+	private RangeDifference[] detailedCalculateK(ASTNodeWithChildren root1,
+			ASTNodeWithChildren root2, CompilationUnit leftUnit, CompilationUnit rightUnit) {
+		double maxVal = 0;
+		ASTNode selectedNode1 = null;
+		ASTNode selectedNode2 = null;
+		for(ASTNodeWithChildren node1 : root1) {
+			if(ASTNode.nodeClassForType(node1.getNode().getNodeType()).getSimpleName().equals("MethodDeclaration")) {
+				for(ASTNodeWithChildren node2 : root2) {
+					if(ASTNode.nodeClassForType(node2.getNode().getNodeType()).getSimpleName().equals("MethodDeclaration")) {
+						double cVal = c(node1, node2, 1);
+						double normalisedVal = cVal/(Math.pow((c(node1, node1, 1)*c(node2,node2,1)), 1));
+						if(normalisedVal > maxVal) {
+							maxVal = normalisedVal;
+							selectedNode1 = node1.getNode();
+							selectedNode2 = node2.getNode();
+						}
+					}
+				}
+			}
+		}
+		if(selectedNode1 != null && selectedNode2 != null ) {
+			RangeDifference[] ret = new RangeDifference[3];
+			RangeDifference rd1 = new ParseTreeRangeDifference(RangeDifference.NOCHANGE, 
+					0, getStartLine(selectedNode2, rightUnit)-1, 
+					0, getStartLine(selectedNode1, leftUnit)-1,
+					-1, -1); 
+			RangeDifference rd2 = new ParseTreeRangeDifference(RangeDifference.CHANGE, 
+					getStartLine(selectedNode2, rightUnit), 
+					getEndLine(selectedNode2, rightUnit)-getStartLine(selectedNode2, rightUnit), 
+					getStartLine(selectedNode1, leftUnit), 
+					getEndLine(selectedNode1, leftUnit)-getStartLine(selectedNode1, leftUnit),
+					-1, -1); 
+			RangeDifference rd3 = new ParseTreeRangeDifference(RangeDifference.NOCHANGE,
+					getEndLine(selectedNode2, rightUnit), 1000,
+					getEndLine(selectedNode1, leftUnit), 1000,
+					-1, -1);
+			ret[0] = rd1;
+			ret[1] = rd2;
+			ret[2] = rd3;
+			return ret;
+		} else{
+			RangeDifference[] ret = {new ParseTreeRangeDifference(RangeDifference.NOCHANGE, 
+					0, rightUnit.getExtendedLength(rightUnit), 
+					0, leftUnit.getExtendedLength(leftUnit), 
+					-1, -1)};
+			return ret;
+		}
+	}
+	
+	private int getStartLine(ASTNode node, CompilationUnit unit) {
+		if(node == null) {
+			return 0;
+		}
+		return unit.getLineNumber(node.getStartPosition())-1;
+	}
+	
+	private int getEndLine(ASTNode node, CompilationUnit unit) {
+		if(node == null) {
+			return 0;
+		}
+		return unit.getLineNumber(node.getStartPosition()+node.getLength());
+	}
+
+	public class ParseTreeRangeDifference extends RangeDifference{
+
+		protected ParseTreeRangeDifference(int kind, int rightStart,
+				int rightLength, int leftStart, int leftLength,
+				int ancestorStart, int ancestorLength) {
+			super(kind, rightStart, rightLength, leftStart, leftLength, ancestorStart,
+					ancestorLength);
+		}
+		
+	}
 }

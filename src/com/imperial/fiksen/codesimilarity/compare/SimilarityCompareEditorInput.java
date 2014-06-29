@@ -23,6 +23,7 @@ import org.eclipse.compare.structuremergeviewer.DiffContainer;
 import org.eclipse.compare.structuremergeviewer.DiffNode;
 import org.eclipse.compare.structuremergeviewer.Differencer;
 import org.eclipse.compare.structuremergeviewer.ICompareInput;
+import org.eclipse.compare.structuremergeviewer.ICompareInputChangeListener;
 import org.eclipse.compare.structuremergeviewer.IDiffElement;
 import org.eclipse.compare.structuremergeviewer.IStructureComparator;
 import org.eclipse.core.resources.IFile;
@@ -77,8 +78,8 @@ public class SimilarityCompareEditorInput extends SaveableCompareEditorInput {
 	 * @param page
 	 */
 	public SimilarityCompareEditorInput(ITypedElement left, ITypedElement right,
-			IWorkbenchPage page) {
-		super(new CompareConfiguration(), page);
+			CompareConfiguration config, IWorkbenchPage page) {
+		super(config, page);
 		this.left = left;
 		this.right = right;
 	}
@@ -88,13 +89,6 @@ public class SimilarityCompareEditorInput extends SaveableCompareEditorInput {
 	}
 
 	private boolean isRightEditable(ICompareInput input) {
-		return false;
-	}
-
-	private boolean isEditable(Object object) {
-		if (object instanceof IEditableContent) {
-			return ((IEditableContent) object).isEditable();
-		}
 		return false;
 	}
 
@@ -110,159 +104,14 @@ public class SimilarityCompareEditorInput extends SaveableCompareEditorInput {
 		return compare(left, right);
 	}
 
-	// TODO: THE BIG ONE!!!! 
 	private DiffNode compare(ITypedElement actLeft, ITypedElement actRight) {
-		if (actLeft.getType().equals(ITypedElement.FOLDER_TYPE)) {
-			// return new MyDiffContainer(null, left,right);
-			DiffNode diffNode = new DiffNode(null, Differencer.CHANGE,
-					null, actLeft, actRight);
-			ITypedElement[] lc = (ITypedElement[]) ((IStructureComparator) actLeft)
-					.getChildren();
-			ITypedElement[] rc = (ITypedElement[]) ((IStructureComparator) actRight)
-					.getChildren();
-			ITypedElement[] ac = null;
-			int li = 0;
-			int ri = 0;
-			while (li < lc.length && ri < rc.length) {
-				ITypedElement ln = lc[li];
-				ITypedElement rn = rc[ri];
-				ITypedElement an = null;
-				if (ac != null)
-					an = ac[ri];
-				int compareTo = ln.getName().compareTo(rn.getName());
-				// TODO: Git ordering!
-				if (compareTo == 0) {
-					if (!ln.equals(rn))
-						diffNode.add(compare(ln, rn));
-					++li;
-					++ri;
-				} else if (compareTo < 0) {
-					DiffNode childDiffNode = new DiffNode(Differencer.ADDITION,
-							an, ln, null);
-					diffNode.add(childDiffNode);
-					if (ln.getType().equals(ITypedElement.FOLDER_TYPE)) {
-						ITypedElement[] children = (ITypedElement[]) ((IStructureComparator) ln)
-								.getChildren();
-						if (children != null && children.length > 0) {
-							for (ITypedElement child : children) {
-								childDiffNode.add(addDirectoryFiles(child,
-										Differencer.ADDITION));
-							}
-						}
-					}
-					++li;
-				} else {
-					DiffNode childDiffNode = new DiffNode(Differencer.DELETION,
-							an, null, rn);
-					diffNode.add(childDiffNode);
-					if (rn.getType().equals(ITypedElement.FOLDER_TYPE)) {
-						ITypedElement[] children = (ITypedElement[]) ((IStructureComparator) rn)
-								.getChildren();
-						if (children != null && children.length > 0) {
-							for (ITypedElement child : children) {
-								childDiffNode.add(addDirectoryFiles(child,
-										Differencer.DELETION));
-							}
-						}
-					}
-					++ri;
-				}
-			}
-			while (li < lc.length) {
-				ITypedElement ln = lc[li];
-				ITypedElement an = null;
-				if (ac != null)
-					an = ac[li];
-				DiffNode childDiffNode = new DiffNode(Differencer.ADDITION, an,
-						ln, null);
-				diffNode.add(childDiffNode);
-				if (ln.getType().equals(ITypedElement.FOLDER_TYPE)) {
-					ITypedElement[] children = (ITypedElement[]) ((IStructureComparator) ln)
-							.getChildren();
-					if (children != null && children.length > 0) {
-						for (ITypedElement child : children) {
-							childDiffNode.add(addDirectoryFiles(child,
-									Differencer.ADDITION));
-						}
-					}
-				}
-				++li;
-			}
-			while (ri < rc.length) {
-				ITypedElement rn = rc[ri];
-				ITypedElement an = null;
-				if (ac != null)
-					an = ac[ri];
-				DiffNode childDiffNode = new DiffNode(Differencer.DELETION, an,
-						null, rn);
-				diffNode.add(childDiffNode);
-				if (rn.getType().equals(ITypedElement.FOLDER_TYPE)) {
-					ITypedElement[] children = (ITypedElement[]) ((IStructureComparator) rn)
-							.getChildren();
-					if (children != null && children.length > 0) {
-						for (ITypedElement child : children) {
-							childDiffNode.add(addDirectoryFiles(child,
-									Differencer.DELETION));
-						}
-					}
-				}
-				++ri;
-			}
-			return diffNode;
-		} else {
-			return new DiffNode(actLeft, actRight);
-		}
+		return new DiffNode(actLeft, actRight);
 	}
 
-	private DiffNode addDirectoryFiles(ITypedElement elem, int diffType) {
-		ITypedElement l = null;
-		ITypedElement r = null;
-		if (diffType == Differencer.DELETION) {
-			r = elem;
-		} else {
-			l = elem;
-		}
-
-		if (elem.getType().equals(ITypedElement.FOLDER_TYPE)) {
-			DiffNode diffNode = null;
-			diffNode = new DiffNode(null, Differencer.CHANGE, null, l, r);
-			ITypedElement[] children = (ITypedElement[]) ((IStructureComparator) elem)
-					.getChildren();
-			for (ITypedElement child : children) {
-				diffNode.add(addDirectoryFiles(child, diffType));
-			}
-			return diffNode;
-		} else {
-			return new DiffNode(diffType, null, l, r);
-		}
-	}
-
-	// TODO: labels
 	private void initLabels(ICompareInput input) {
 		CompareConfiguration cc = getCompareConfiguration();
-			cc.setLeftLabel("THIS IS THE LABEL");
+			cc.setLeftLabel(left.getName());
 			cc.setRightLabel(right.getName());
-			// String leftLabel = getFileRevisionLabel(getLeftRevision());
-			// cc.setLeftLabel(leftLabel);
-			// } else if (getResource() != null) {
-			// String label =
-			// NLS.bind(UIText.GitCompareFileRevisionEditorInput_LocalLabel, new
-			// Object[]{ input.getLeft().getName() });
-			// cc.setLeftLabel(label);
-			// } else {
-			// cc.setLeftLabel(left.getName());
-			// }
-			// if (getRightRevision() != null) {
-			// String rightLabel = getFileRevisionLabel(getRightRevision());
-			// cc.setRightLabel(rightLabel);
-			// } else {
-			// cc.setRightLabel(right.getName());
-			// }
-			// if (getAncestorRevision() != null) {
-			// String ancestorLabel =
-			// getFileRevisionLabel(getAncestorRevision());
-			// cc.setAncestorLabel(ancestorLabel);
-
 	}
 
 	/*
@@ -272,15 +121,6 @@ public class SimilarityCompareEditorInput extends SaveableCompareEditorInput {
 	 * tooltip
 	 */
 	public String getToolTipText() {
-		// Object[] titleObject = new Object[3];
-		// titleObject[0] = getLongName(left);
-		// titleObject[1] =
-		// CompareUtils.truncatedRevision(getContentIdentifier(getLeftRevision()));
-		// titleObject[2] =
-		// CompareUtils.truncatedRevision(getContentIdentifier(getRightRevision()));
-		// return
-		// NLS.bind(UIText.GitCompareFileRevisionEditorInput_CompareTooltip,
-		// titleObject);
 		return "Comparison of " + left.getName() + " and " + right.getName();
 	}
 
@@ -290,15 +130,6 @@ public class SimilarityCompareEditorInput extends SaveableCompareEditorInput {
 	 * @see org.eclipse.compare.CompareEditorInput#getTitle()
 	 */
 	public String getTitle() {
-		// Object[] titleObject = new Object[3];
-		// titleObject[0] = getShortName(left);
-		// titleObject[1] =
-		// CompareUtils.truncatedRevision(getContentIdentifier(getLeftRevision()));
-		// titleObject[2] =
-		// CompareUtils.truncatedRevision(getContentIdentifier(getRightRevision()));
-		// return
-		// NLS.bind(UIText.GitCompareFileRevisionEditorInput_CompareTooltip,
-		// titleObject);
 		return "Comparison of " + left.getName() + " and " + right.getName();
 	}
 
@@ -329,248 +160,12 @@ public class SimilarityCompareEditorInput extends SaveableCompareEditorInput {
 		getCompareConfiguration().setRightEditable(isRightEditable(input));
 		initLabels(input);
 		setTitle("Similarity Comparison of " + left.getName() + " and " + right.getName());
-
-		// The compare editor (Structure Compare) will show the diff filenames
-		// with their project relative path. So, no need to also show directory
-		// entries.
-//		DiffNode flatDiffNode = new NotifiableDiffNode(
-//				null,
-//				ancestor != null ? Differencer.CONFLICTING : Differencer.CHANGE,
-//				ancestor, left, right);
-//		flatDiffView(flatDiffNode, (DiffNode) input);
-//		TODO: need to fix this?
-
 		return input;
-	}
-
-//	@Override
-//	protected Saveable createSaveable() {
-//		// copied from
-//		// org.eclipse.team.ui.synchronize.SaveableCompareEditorInput.createSaveable()
-//		Object compareResult = getCompareResult();
-//		Assert.isNotNull(compareResult,
-//				"This method cannot be called until after prepareInput is called"); //$NON-NLS-1$
-//		return new InternalResourceSaveableComparison(
-//				(ICompareInput) compareResult, this);
-//	}
-
-	private void flatDiffView(DiffNode rootNode, DiffNode currentNode) {
-		if (currentNode != null) {
-			IDiffElement[] dElems = currentNode.getChildren();
-			if (dElems != null) {
-				for (IDiffElement dElem : dElems) {
-					DiffNode dNode = (DiffNode) dElem;
-					if (dNode.getChildren() != null
-							&& dNode.getChildren().length > 0) {
-						flatDiffView(rootNode, dNode);
-					} else {
-						rootNode.add(dNode);
-					}
-				}
-			}
-		}
 	}
 
 	@Override
 	public void registerContextMenu(MenuManager menu,
 			final ISelectionProvider selectionProvider) {
 		super.registerContextMenu(menu, selectionProvider);
-//		registerOpenWorkspaceVersion(menu, selectionProvider);
 	}
-//TODO? openWSVersion ignored
-//	private void registerOpenWorkspaceVersion(MenuManager menu,
-//			final ISelectionProvider selectionProvider) {
-//		FileRevisionTypedElement leftRevision = getLeftRevision();
-//		if (leftRevision != null) {
-//			IFileRevision fileRevision = leftRevision.getFileRevision();
-//			if (fileRevision instanceof OpenWorkspaceVersionEnabled) {
-//				OpenWorkspaceVersionEnabled workspaceVersion = (OpenWorkspaceVersionEnabled) fileRevision;
-//				final File workspaceFile = new File(workspaceVersion
-//						.getRepository().getWorkTree(),
-//						workspaceVersion.getGitPath());
-//				if (workspaceFile.exists())
-//					menu.addMenuListener(new IMenuListener() {
-//						public void menuAboutToShow(IMenuManager manager) {
-//							Action action = new OpenWorkspaceVersionAction(
-//									UIText.CommitFileDiffViewer_OpenWorkingTreeVersionInEditorMenuLabel,
-//									selectionProvider, workspaceFile);
-//							manager.insertAfter("file", action); //$NON-NLS-1$
-//						}
-//					});
-//			}
-//		}
-//	}
-
-//	private class OpenWorkspaceVersionAction extends Action {
-//
-//		private final ISelectionProvider selectionProvider;
-//
-//		private final File workspaceFile;
-//
-//		private OpenWorkspaceVersionAction(String text,
-//				ISelectionProvider selectionProvider, File workspaceFile) {
-//			super(text);
-//			this.selectionProvider = selectionProvider;
-//			this.workspaceFile = workspaceFile;
-//		}
-//
-//		@Override
-//		public void run() {
-//			int selectedLine = 0;
-//			if (selectionProvider.getSelection() instanceof ITextSelection) {
-//				ITextSelection selection = (ITextSelection) selectionProvider
-//						.getSelection();
-//				selectedLine = selection.getStartLine();
-//			}
-//
-//			IWorkbenchWindow window = PlatformUI.getWorkbench()
-//					.getActiveWorkbenchWindow();
-//			IWorkbenchPage page = window.getActivePage();
-//			IEditorPart editor = EgitUiEditorUtils.openEditor(workspaceFile,
-//					page);
-//			selectLine(editor, selectedLine);
-//		}
-//
-//		private void selectLine(IEditorPart editorPart, int selectedLine) {
-//			if (editorPart instanceof ITextEditor) {
-//				ITextEditor editor = (ITextEditor) editorPart;
-//				IDocument document = editor.getDocumentProvider().getDocument(
-//						editor.getEditorInput());
-//				if (document != null)
-//					try {
-//						IRegion line = document
-//								.getLineInformation(selectedLine);
-//						editor.selectAndReveal(line.getOffset(), 0);
-//					} catch (BadLocationException e) {
-//						// line seems not to exist in
-//						// workspace version
-//					}
-//			}
-//		}
-//	}
-
-	/**
-	 * ITypedElement without content. May be used to indicate that a file is not
-	 * available.
-	 */
-	public static class EmptyTypedElement implements ITypedElement {
-
-		private String name;
-
-		/**
-		 * @param name
-		 *            the name used for display
-		 */
-		public EmptyTypedElement(String name) {
-			this.name = name;
-		}
-
-		public Image getImage() {
-			return null;
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public String getType() {
-			return ITypedElement.UNKNOWN_TYPE;
-		}
-
-	}
-
-	// copy of
-	// org.eclipse.team.ui.synchronize.SaveableCompareEditorInput.InternalResourceSaveableComparison
-	// we need to copy this private class to prevent NPE in
-	// org.eclipse.team.internal.ui.synchronize.LocalResourceSaveableComparison.propertyChange(PropertyChangeEvent)
-	// when moving and saving partial changes when comparing version from git
-	// index with HEAD
-//	private class InternalResourceSaveableComparison extends
-//			LocalResourceSaveableComparison implements
-//			ISharedDocumentAdapterListener {
-//		private LocalResourceTypedElement lrte;
-//
-//		private boolean connected = false;
-//
-//		public InternalResourceSaveableComparison(ICompareInput input,
-//				CompareEditorInput editorInput) {
-//			super(input, editorInput, left);
-//			ITypedElement element = left;
-//			if (element instanceof LocalResourceTypedElement) {
-//				lrte = (LocalResourceTypedElement) element;
-//				if (lrte.isConnected()) {
-//					registerSaveable(true);
-//				} else {
-//					lrte.setSharedDocumentListener(this);
-//				}
-//			}
-//		}
-//
-//		protected void fireInputChange() {
-//			MyCompareEditorInput.this.fireInputChange();
-//		}
-//
-//		public void dispose() {
-//			super.dispose();
-//			if (lrte != null)
-//				lrte.setSharedDocumentListener(null);
-//		}
-//
-//		public void handleDocumentConnected() {
-//			if (connected)
-//				return;
-//			connected = true;
-//			registerSaveable(false);
-//			if (lrte != null)
-//				lrte.setSharedDocumentListener(null);
-//		}
-//
-//		private void registerSaveable(boolean init) {
-//			ICompareContainer container = getContainer();
-//			IWorkbenchPart part = container.getWorkbenchPart();
-//			if (part != null) {
-//				ISaveablesLifecycleListener lifecycleListener = getSaveablesLifecycleListener(part);
-//				// Remove this saveable from the lifecycle listener
-//				if (!init)
-//					lifecycleListener
-//							.handleLifecycleEvent(new SaveablesLifecycleEvent(
-//									part, SaveablesLifecycleEvent.POST_CLOSE,
-//									new Saveable[] { this }, false));
-//				// Now fix the hashing so it uses the connected document
-//				initializeHashing();
-//				// Finally, add this saveable back to the listener
-//				lifecycleListener
-//						.handleLifecycleEvent(new SaveablesLifecycleEvent(part,
-//								SaveablesLifecycleEvent.POST_OPEN,
-//								new Saveable[] { this }, false));
-//			}
-//		}
-//
-//		private ISaveablesLifecycleListener getSaveablesLifecycleListener(
-//				IWorkbenchPart part) {
-//			ISaveablesLifecycleListener listener = (ISaveablesLifecycleListener) Utils
-//					.getAdapter(part, ISaveablesLifecycleListener.class);
-//			if (listener == null)
-//				listener = (ISaveablesLifecycleListener) part.getSite()
-//						.getService(ISaveablesLifecycleListener.class);
-//			return listener;
-//		}
-//
-//		public void handleDocumentDeleted() {
-//			// Ignore
-//		}
-//
-//		public void handleDocumentDisconnected() {
-//			// Ignore
-//		}
-//
-//		public void handleDocumentFlushed() {
-//			// Ignore
-//		}
-//
-//		public void handleDocumentSaved() {
-//			// Ignore
-//		}
-//	}
-
 }
