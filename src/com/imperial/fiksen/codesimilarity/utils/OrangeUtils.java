@@ -55,7 +55,7 @@ public class OrangeUtils {
 		PrintWriter writer = new PrintWriter(ORANGE_PROJECT_FILE, "UTF-8");
 		writer.print(GENERIC_PROJECT);
 		writer.close();
-		orange = Runtime.getRuntime().exec("open " + ORANGE_LOCATION + " --args " + ORANGE_PROJECT_FILE);	
+		orange = Runtime.getRuntime().exec("open -n " + ORANGE_LOCATION + " --args " + ORANGE_PROJECT_FILE);	
 	}
 
 }
