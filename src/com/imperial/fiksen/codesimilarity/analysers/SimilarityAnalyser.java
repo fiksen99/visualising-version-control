@@ -24,7 +24,7 @@ public abstract class SimilarityAnalyser {
 	
 	protected static final String SKELETON_PROJECT = "skeleton_";
 
-	protected static final int NUM_THREADS = 8;
+	protected static final int NUM_THREADS = Runtime.getRuntime().availableProcessors()*2;
 
 	protected List<String> orderedProjects;
 	
