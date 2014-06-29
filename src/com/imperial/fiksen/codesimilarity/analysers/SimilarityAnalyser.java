@@ -28,7 +28,7 @@ public abstract class SimilarityAnalyser {
 
 	protected List<String> orderedProjects;
 	
-	protected Set<Integer> toIgnore;
+	protected Set<Integer> projectsToIgnore;
 	
 	protected static Process orange;
 	
@@ -45,10 +45,10 @@ public abstract class SimilarityAnalyser {
 	}
 
 	public void print(PrintStream printStream) {
-		ResultsPrinter.print(scores, orderedProjects, toIgnore, printStream);
+		ResultsPrinter.print(scores, orderedProjects, projectsToIgnore, printStream);
 	}
 	
-	public void analyse(IProject[] projects) {
+	public void analyse(IProject[] projects, Set<String> checkFiles) {
 		OrangeUtils.createProcess();
 	}
 

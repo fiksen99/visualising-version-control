@@ -33,7 +33,7 @@ import com.imperial.fiksen.codesimilarity.utils.OrangeUtils;
 
 public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 	
-	private static final double DECAY_FACTOR = 0.15;
+	private static final double DECAY_FACTOR = 0.2;
 	private static final int THRESHOLD_DEPTH = 3;
 	
 	private Map<String, Double> pairedScores;
@@ -45,9 +45,12 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 	private double min = 1.0;
 	boolean recalculate;
 	
-	private Set<String> filesToIgnore;
+	private Set<String> filesToCheck;
 	private boolean hasSkeleton;
 	protected int completed;
+	
+	double[] skeletonNormalise;
+	private boolean filterFiles;
 	
 	public ParseTreeKernelSimilarityAnalyser() {
 		super();
@@ -55,11 +58,12 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 	}
 
 	@Override
-	public void analyse(IProject[] projects) {
+	public void analyse(IProject[] projects, Set<String> checkFiles) {
 		recalculate = true;
 		if(recalculate) {
-			setUp(projects);
+			setUp(projects, checkFiles);
 			executeComparison(projects);
+			System.out.println(scores[0][0]);
 			normaliseAllScores();
 			System.out.println("100% complete!");
 		}
@@ -69,15 +73,16 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		super.analyse(projects);
+		super.analyse(projects, checkFiles);
 	}
 
-	private void setUp(IProject[] projects) {
+	private void setUp(IProject[] projects, Set<String> checkFiles) {
 		total = 0;
 		pairedScores = new ConcurrentHashMap<String, Double>();
-		filesToIgnore = new HashSet<String>();
+		filesToCheck = checkFiles;
+		filterFiles = !filesToCheck.isEmpty();
 		hasSkeleton = false;
-		toIgnore = null;
+		projectsToIgnore = null;
 		orderedProjects = new LinkedList<String>();
 		completed = 0;
 		for (int i = 0 ; i < projects.length ; i++) {
@@ -87,7 +92,7 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 					String projectName = project.getName();
 					if(projectName.endsWith(SKELETON_PROJECT)) {
 						hasSkeleton = true;
-						toIgnore = Collections.synchronizedSet(new HashSet<Integer>());	
+						projectsToIgnore = Collections.synchronizedSet(new HashSet<Integer>());	
 					}
 					orderedProjects.add(projectName);
 					total++;
@@ -104,6 +109,7 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 	public void executeComparison(IProject[] projects) {
         ExecutorService executor = Executors.newFixedThreadPool(NUM_THREADS);
         Future<?>[] toComplete = new Future<?>[NUM_THREADS];
+        long time = System.currentTimeMillis();
         for(int i = 0; i < NUM_THREADS; i++) {
         	toComplete[i] = executor.submit(new Compute(i, projects.clone(), scores));
         }
@@ -118,6 +124,7 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 				e.printStackTrace();
 			}
         }
+        System.out.println(System.currentTimeMillis() - time);
         executor.shutdown();
 	}
 
@@ -140,7 +147,7 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 		}
 		
 		private void computeScores() {
-			double[] skeletonNormalise = new double[total];
+			skeletonNormalise = new double[total];
 			int projectNum = 0;
 			for (IProject project1 : projects) {
 				if(projectNum % NUM_THREADS == this.threadNum-1)  {
@@ -156,14 +163,15 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 								int index2 = orderedProjects.lastIndexOf(project2Name);
 								synchronized(scores) {
 									scores[index1][index2] = sim;
+									min = Math.min(min, sim);
 								}
 								if(hasSkeleton && p1IsSkeleton) {
 									if(sim == 1.0) {
-										toIgnore.add(index2);
+										projectsToIgnore.add(index2);
 									}
 									skeletonNormalise[index2] = sim;
 								} 
-								synchronized(filesToIgnore) {
+								synchronized(filesToCheck) {
 								++completed;
 								}
 								if((completed)%(4*NUM_THREADS) == 0) {
@@ -186,9 +194,12 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 		double ePowMin = Math.pow(Math.E, min);
 		for(int i = 0; i < scores.length; i++) {
 			for(int j = 0; j < scores[i].length; j++) {
-				//scores[i][j] = 1.0-(Math.pow(Math.E, scores[i][j])-ePowMin)/(Math.E-ePowMin);
-				//scores[i][j] = (scores[i][j]-min)/(1-min);
-				//scores[i][j] = 1.0-(scores[i][j]-(skeletonNormalise[i]+skeletonNormalise[j])/2.0);
+//				scores[i][j] = 1.0-(Math.pow(Math.E, scores[i][j])-ePowMin)/(Math.E-ePowMin);
+//				System.out.println("________________");
+//				System.out.println(scores[i][j]);
+//				scores[i][j] = 1.0-(scores[i][j]-min)/(1-min);
+//				System.out.println(scores[i][j]);
+//				scores[i][j] = 1.0-(scores[i][j]-(skeletonNormalise[i]+skeletonNormalise[j])/2.0);
 				scores[i][j] = 1.0-scores[i][j];
 			}
 		}
@@ -202,6 +213,7 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 	}
 
 	public static double normaliseSimilarity(double comp, double selfComp1, double selfComp2){
+		//System.out.println(comp+"/sqrt("+selfComp1+"*"+selfComp2+")");
 		return comp/Math.sqrt(selfComp1*selfComp2);
 	}
 	
@@ -227,40 +239,47 @@ public class ParseTreeKernelSimilarityAnalyser extends SimilarityAnalyser {
 	}
 	
 	private double compareProjects(IProject project1, IProject project2) throws JavaModelException {
-		IPackageFragment[] packages1 = JavaCore.create(project1).getPackageFragments();
-		IPackageFragment[] packages2 = JavaCore.create(project2).getPackageFragments();
-		return comparePackages(packages1, packages2);
+		List<ICompilationUnit> files1 = getCompilationUnits(project1);
+		List<ICompilationUnit> files2 = getCompilationUnits(project2);
+		return comparePackages(files1, files2);
 	}
 
-	private double comparePackages(IPackageFragment[] packages1,
-			IPackageFragment[] packages2) throws JavaModelException {
-		double k = 0;
-		for (IPackageFragment package1 : packages1) {
-			if (package1.getKind() == IPackageFragmentRoot.K_SOURCE) {
-				double maxSim = 0.0;
-				for (IPackageFragment package2 : packages2) {
-					if(package2.getKind() == IPackageFragmentRoot.K_SOURCE) {
-						for (ICompilationUnit unit1 : package1.getCompilationUnits()) {
-							for (ICompilationUnit unit2 : package2.getCompilationUnits()) {
-//								if(!unit1.getElementName().equals("IOUtil.java") && !unit2.getElementName().equals("IOUtil.java")) {
-//								if ((unit1.getElementName().equals("RecursionLibrary.java")
-//										||  unit1.getElementName().equals("LoopArraysLibrary.java"))
-//										&&(unit2.getElementName().equals("RecursionLibrary.java")
-//												||  unit2.getElementName().equals("LoopArraysLibrary.java"))) {
-									AllNodeVisitor visitor1 = new AllNodeVisitor();
-									AllNodeVisitor visitor2 = new AllNodeVisitor();
-									ASTNode parse = parse(unit1);
-									parse.accept(visitor1);
-									parse = parse(unit2);
-									parse.accept(visitor2);
-									maxSim = Math.max(maxSim, calculateK(visitor1.getRoot(), visitor2.getRoot()));
-//								}
-							}
-						}
-					}
+	private List<ICompilationUnit> getCompilationUnits(IProject project) throws JavaModelException {
+		List<ICompilationUnit> files = new LinkedList<ICompilationUnit>();
+		for(IPackageFragment pkg: JavaCore.create(project).getPackageFragments()) {
+			if(pkg.getKind() == IPackageFragmentRoot.K_SOURCE) {
+				for(ICompilationUnit file: pkg.getCompilationUnits()) {
+					files.add(file);
 				}
-				k += maxSim;
 			}
+		}
+		return files;
+	}
+
+	private double comparePackages(List<ICompilationUnit> files1,
+			List<ICompilationUnit> files2) throws JavaModelException {
+		double k = DECAY_FACTOR;
+		if(files1.size() > files2.size()) {
+			List<ICompilationUnit> temp = files1;
+			files1 = files2;
+			files2 = temp;
+		}
+		for(ICompilationUnit unit1: files1) {
+			double maxSim = 0;
+			for(ICompilationUnit unit2: files2) {
+				if(!filterFiles ||
+						(filesToCheck.contains(unit1.getElementName())
+						&&  filesToCheck.contains(unit2.getElementName()))) {
+				AllNodeVisitor visitor1 = new AllNodeVisitor();
+				ASTNode parsed = parse(unit1);
+				parsed.accept(visitor1);
+				AllNodeVisitor visitor2 = new AllNodeVisitor();
+				parsed = parse(unit2);
+				parsed.accept(visitor2);
+				maxSim = Math.max(maxSim, calculateK(visitor1.getRoot(), visitor2.getRoot()));
+				}
+			}
+			k *= 1+maxSim;
 		}
 		return k;
 		

@@ -1,5 +1,7 @@
 package com.imperial.fiksen.codesimilarity.handlers;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -40,7 +42,7 @@ public class CompareSelected extends AbstractHandler {
         }
         IProject[] projectsArr = selectedProjects.toArray(new IProject[selectedProjects.size()]);
         SimilarityAnalyser analyser = new ParseTreeKernelSimilarityAnalyser();
-        analyser.analyse(projectsArr);
+        analyser.analyse(projectsArr, new HashSet<String>());
         return null;
 	}
 }
