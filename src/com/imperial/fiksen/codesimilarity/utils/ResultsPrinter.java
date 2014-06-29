@@ -138,7 +138,7 @@ public class ResultsPrinter {
 		for(int j = 0; j < orderedProjects.size(); j++) {
 			if(!toIgnore.contains(j)) {
 				System.out.print(orderedProjects.get(j) + "\t");
-				String score = formatScoreString(1-scores[i][j]);
+				String score = formatScoreString(scores[i][j]);
 				System.out.println(score);
 			}
 		}
@@ -146,8 +146,11 @@ public class ResultsPrinter {
 	}
 
 	private static String formatScoreString(double d) {
-		if(d<0) d=1.0;
-		return String.format("%1$,.6f", d);
+		if(d<0) {
+			d=1; //overflow
+			System.err.println("overflow in similarity, try a smaller decay factor");
+		}
+		return String.format("%1$,.6f", d*100);
 		
 	}
 
